@@ -6,6 +6,7 @@ local Augs = require(Shared.Config.Augmentations)
 local Remotes = require(Shared.Remotes)
 local PlayerData = require(script.Parent.Parent.PlayerData)
 local InventoryService = require(script.Parent.InventoryService)
+local VoiceService = require(script.Parent.VoiceService)
 
 local AugService = {}
 
@@ -35,6 +36,7 @@ function AugService.install(player: Player, augId: string): boolean
     state.level = 1
     state.active = false
     AugService.replicate(player)
+    VoiceService.playFor(player, "Mission:augInstalled")
     return true
 end
 

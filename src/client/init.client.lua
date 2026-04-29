@@ -9,6 +9,7 @@ local player = Players.LocalPlayer
 
 local WeaponController = require(script.Controllers.WeaponController)
 local InteractionController = require(script.Controllers.InteractionController)
+local VoiceController = require(script.Controllers.VoiceController)
 local HUD = require(script.UI.HUD)
 local InventoryUI = require(script.UI.InventoryUI)
 local SkillsUI = require(script.UI.SkillsUI)
@@ -25,6 +26,7 @@ end)
 
 WeaponController.start()
 InteractionController.start()
+VoiceController.start()
 HUD.start()
 InventoryUI.start()
 SkillsUI.start()

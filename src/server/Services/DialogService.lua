@@ -7,6 +7,7 @@ local Remotes = require(Shared.Remotes)
 local PlayerData = require(script.Parent.Parent.PlayerData)
 local InventoryService = require(script.Parent.InventoryService)
 local MissionService = require(script.Parent.MissionService)
+local VoiceService = require(script.Parent.VoiceService)
 
 local DialogService = {}
 
@@ -34,6 +35,10 @@ local function send(player: Player)
     }
     local ev = Remotes.get("RequestDialog") :: RemoteEvent
     ev:FireClient(player, payload)
+
+    -- Voice cue: "Dialog:<tree>:<node>". Subtitle is suppressed (the dialog UI
+    -- already shows the full text); only the audio plays.
+    VoiceService.playFor(player, "Dialog:" .. sess.tree .. ":" .. sess.node)
 end
 
 function DialogService.start(player: Player, treeId: string)

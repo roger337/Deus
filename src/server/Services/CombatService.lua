@@ -13,6 +13,7 @@ local PlayerData = require(script.Parent.Parent.PlayerData)
 local SkillService = require(script.Parent.SkillService)
 local AugService = require(script.Parent.AugService)
 local InventoryService = require(script.Parent.InventoryService)
+local VoiceService = require(script.Parent.VoiceService)
 
 local CombatService = {}
 
@@ -149,10 +150,20 @@ function CombatService.applyDamageToPlayer(player: Player, amount: number, sourc
         local mag = AugService.passiveMagnitude(player, "EMPShield")
         if mag then amount *= mag end
     end
+    local prevHealth = data.health
     data.health = math.max(0, data.health - amount)
     InventoryService.replicateStats(player)
     local fb = Remotes.get("DamageFeedback") :: RemoteEvent
     fb:FireClient(player, amount, source)
+
+    -- "I'm hit" bark, with a louder one if we just crossed below 25 HP.
+    if amount >= 8 then
+        VoiceService.playFor(player, "JC:hurt")
+    end
+    if prevHealth >= 25 and data.health < 25 and data.health > 0 then
+        VoiceService.playFor(player, "JC:lowHealth")
+    end
+
     local char = player.Character
     if char then
         local hum = char:FindFirstChildOfClass("Humanoid")

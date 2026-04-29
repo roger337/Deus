@@ -10,6 +10,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 
 local CombatService = require(script.Parent.Services.CombatService)
 local AugService = require(script.Parent.Services.AugService)
+local VoiceService = require(script.Parent.Services.VoiceService)
 local Weapons = require(Shared.Config.Weapons)
 
 local EnemyAI = {}
@@ -227,6 +228,10 @@ function EnemyAI.run(enemy: Model)
             local player, pos = findTargetPlayer(enemy)
             local weaponId = enemy:GetAttribute("Weapon") or "AssaultRifle"
             if player and pos then
+                if state ~= "Combat" then
+                    -- Just spotted the player: bark.
+                    VoiceService.bark(enemy, "NSF:spotted")
+                end
                 state = "Combat"
                 lastSeen = pos
                 if os.clock() - lastFire > ATTACK_COOLDOWN then
@@ -235,6 +240,7 @@ function EnemyAI.run(enemy: Model)
                 end
             elseif lastSeen and state == "Combat" then
                 state = "Suspicious"
+                VoiceService.bark(enemy, "NSF:lostTarget")
                 hum:MoveTo(lastSeen)
                 task.wait(2)
                 lastSeen = nil
@@ -246,7 +252,14 @@ function EnemyAI.run(enemy: Model)
         end
     end)
 
+    hum.HealthChanged:Connect(function(hp)
+        if hp > 0 and hp < hum.MaxHealth * 0.5 then
+            VoiceService.bark(enemy, "NSF:wounded")
+        end
+    end)
+
     hum.Died:Connect(function()
+        VoiceService.bark(enemy, "NSF:death")
         task.delay(10, function() enemy:Destroy() end)
     end)
 end

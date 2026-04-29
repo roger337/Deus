@@ -56,6 +56,40 @@ rojo build -o DeusEx.rbxlx
 - **Maps as build scripts.** Each map module returns a `build(folder)` function and a `spawnPoint`. `LevelManager` clears the world and calls `build()` on transitions, so you can edit a map and reload by re-running.
 - **DataStore is best-effort.** Saves succeed in published places; soft-fails in Studio without API services.
 
+## Voice lines
+
+The game has a full voice pipeline wired up: dialog lines, enemy combat barks ("Hostile! Take him down!"), JC's hurt grunts, and mission cues all fire `PlayVoice` events from the server. Until you upload audio, **the system gracefully no-ops** — barks still display as subtitles and dialog UI still shows the line. Adding audio is a one-file change.
+
+### Adding your own audio
+
+1. Open `src/shared/Config/VoiceLines.lua`. Each entry is a string key mapped to `{ assetId = "", duration = N, ... }`.
+2. Upload your audio in Roblox Studio (`View → Toolbox → Inventory → My Audio`) and copy the resulting `rbxassetid://<NUMBER>` URL.
+3. Paste it into the `assetId` field for the matching key. Reload the place; that line is now voiced.
+
+### Voice key naming
+
+| Key pattern                       | When it plays                                                          |
+| --------------------------------- | ---------------------------------------------------------------------- |
+| `Dialog:<tree>:<node>`            | Each time `DialogService` shows that node. Subtitle is the dialog text |
+| `NSF:spotted` / `lostTarget` etc. | Enemy AI bark (positional, 3D audio)                                   |
+| `JC:hurt` / `JC:lowHealth`        | Player took damage / dropped below 25 HP                               |
+| `Mission:objectiveAdded` / etc.   | Global mission cue (no positional audio)                               |
+
+### How the pipeline works
+
+- `VoiceService.playFor(player, key)` — server fires a cue to one player.
+- `VoiceService.playFromInstance(npc, key, range?)` — positional, 3D-audible within range.
+- `VoiceService.bark(npc, key)` — same as above but throttled to once per 4 s per source so AI loops can call it freely.
+- Server only sends the **key + source position** — never the asset URL — keeping the wire small. The client looks up the asset locally from `VoiceLines.lua`.
+- Bark-type subtitles appear in a bottom-center caption GUI; dialog-type voice lines reuse the existing `DialogUI` text (no double display).
+
+### Generating voice lines (suggestion)
+
+If you want to populate dozens of lines fast, you can:
+- Record yourself / a friend in any DAW, export to `.ogg` or `.mp3`, upload to Roblox.
+- Use a TTS tool (ElevenLabs, Coqui, etc.) per node, then upload. Keep one voice per character (Paul Denton, Anna Navarre, etc.) for consistency.
+- Roblox enforces a moderation pass on uploaded audio and a 7-second-or-30-second tier — make sure each clip fits within your `duration` budget.
+
 ## Repository layout
 
 ```
@@ -68,7 +102,8 @@ src/
 │       ├── Augmentations.lua
 │       ├── Items.lua
 │       ├── Dialog.lua
-│       └── Objectives.lua
+│       ├── Objectives.lua
+│       └── VoiceLines.lua       # paste in audio asset IDs here
 ├── server/                       # ServerScriptService.Server
 │   ├── init.server.lua           # boot
 │   ├── PlayerData.lua
@@ -82,7 +117,8 @@ src/
 │   │   ├── CombatService.lua
 │   │   ├── DialogService.lua
 │   │   ├── InteractionService.lua
-│   │   └── MissionService.lua
+│   │   ├── MissionService.lua
+│   │   └── VoiceService.lua
 │   └── Maps/
 │       ├── init.lua              # map registry
 │       ├── MapUtil.lua
@@ -95,7 +131,8 @@ src/
     ├── init.client.lua
     ├── Controllers/
     │   ├── WeaponController.lua
-    │   └── InteractionController.lua
+    │   ├── InteractionController.lua
+    │   └── VoiceController.lua
     └── UI/
         ├── Theme.lua
         ├── HUD.lua

@@ -6,6 +6,7 @@ local Objectives = require(Shared.Config.Objectives)
 local Remotes = require(Shared.Remotes)
 local PlayerData = require(script.Parent.Parent.PlayerData)
 local SkillService = require(script.Parent.SkillService)
+local VoiceService = require(script.Parent.VoiceService)
 
 local MissionService = {}
 
@@ -18,6 +19,7 @@ function MissionService.start(player: Player, objectiveId: string)
     MissionService.replicate(player)
     local notify = Remotes.get("Notify") :: RemoteEvent
     notify:FireClient(player, "New objective: " .. def.title)
+    VoiceService.playFor(player, "Mission:objectiveAdded")
 end
 
 function MissionService.advance(player: Player, objectiveId: string, amount: number?)
@@ -32,6 +34,7 @@ function MissionService.advance(player: Player, objectiveId: string, amount: num
         SkillService.grantPoints(player, def.rewardSkillPoints)
         local notify = Remotes.get("Notify") :: RemoteEvent
         notify:FireClient(player, "Objective complete: " .. def.title)
+        VoiceService.playFor(player, "Mission:objectiveComplete")
     end
     MissionService.replicate(player)
 end

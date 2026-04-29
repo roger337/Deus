@@ -44,6 +44,7 @@ local EVENT_NAMES = {
     "StatsUpdate",
     "DamageFeedback",
     "Notify",
+    "PlayVoice",
 }
 
 local FUNCTION_NAMES = {

@@ -11,6 +11,7 @@ local DialogService = require(script.Parent.DialogService)
 local InventoryService = require(script.Parent.InventoryService)
 local MissionService = require(script.Parent.MissionService)
 local SkillService = require(script.Parent.SkillService)
+local VoiceService = require(script.Parent.VoiceService)
 
 local InteractionService = {}
 
@@ -77,11 +78,15 @@ function InteractionService.confirmLockpick(player: Player, target: Instance, su
     if not InventoryService.has(player, "Lockpick", 1) then return end
     InventoryService.remove(player, "Lockpick", 1)
     target:SetAttribute("Locked", false)
+    VoiceService.playFor(player, "Mission:lockpickSuccess")
     InteractionService.handleInteraction(player, target)
 end
 
 function InteractionService.confirmHack(player: Player, target: Instance, success: boolean)
-    if not success then return end
+    if not success then
+        VoiceService.playFor(player, "Mission:hackFail")
+        return
+    end
     if target:GetAttribute("InteractionType") ~= "Hack" then return end
     if not InventoryService.has(player, "Multitool", 1) then return end
     InventoryService.remove(player, "Multitool", 1)
@@ -90,6 +95,7 @@ function InteractionService.confirmHack(player: Player, target: Instance, succes
         MissionService.advance(player, objectiveId, math.huge)
     end
     target:SetAttribute("Hacked", true)
+    VoiceService.playFor(player, "Mission:hackSuccess")
 end
 
 function InteractionService.init()
