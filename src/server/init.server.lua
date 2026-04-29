@@ -21,6 +21,7 @@ local InteractionService = require(script.Services.InteractionService)
 local MissionService = require(script.Services.MissionService)
 local VoteService = require(script.Services.VoteService)
 local VendorService = require(script.Services.VendorService)
+local AccessService = require(script.Services.AccessService)
 local EnemyAI = require(script.EnemyAI)
 local LevelManager = require(script.LevelManager)
 
@@ -32,6 +33,7 @@ DialogService.init()
 InteractionService.init()
 VoteService.init()
 VendorService.init()
+AccessService.init()
 SaveSlotService.init()
 
 -- =========================================================================
@@ -121,6 +123,7 @@ local function onPlayerAdded(player: Player)
         AugService.replicate(player)
         MissionService.replicate(player)
         WorldState.replicate(player)
+        AccessService.replicateTo(player)
     end)
 end
 

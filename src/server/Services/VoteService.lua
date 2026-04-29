@@ -19,6 +19,15 @@ local Remotes = require(Shared.Remotes)
 local Votes = require(Shared.Config.Votes)
 local WorldState = require(script.Parent.Parent.WorldState)
 
+-- Lazy-required to avoid circular import.
+local _DuelService = nil
+local function duelService()
+    if not _DuelService then
+        _DuelService = require(script.Parent.DuelService)
+    end
+    return _DuelService
+end
+
 local VoteService = {}
 
 -- Lazy-required to avoid circular import.
@@ -91,42 +100,68 @@ local function applyOutcome(effect: string)
     end
 end
 
+local function findOption(optId: string): Votes.VoteOption?
+    if not active then return nil end
+    for _, opt in ipairs(active.def.options) do
+        if opt.id == optId then return opt end
+    end
+    return nil
+end
+
+local function commitWinner(winnerId: string, count: number)
+    if not active then return end
+    local winningOption = findOption(winnerId)
+    local notify = Remotes.get("Notify") :: RemoteEvent
+    for _, player in ipairs(Players:GetPlayers()) do
+        notify:FireClient(player, string.format("Vote: %s wins (%d votes).",
+            winningOption and winningOption.label or winnerId, count))
+    end
+    if winningOption then
+        applyOutcome(winningOption.effect)
+    end
+    broadcast("CloseVote", { voteId = active.def.id, winner = winnerId })
+    active = nil
+end
+
 local function resolve()
     if not active or active.closing then return end
     active.closing = true
 
     local counts = tally()
-    local winnerId: string = active.def.options[1].id
-    local winnerCount = counts[winnerId] or 0
-    -- Iterate options in declared order so first listed wins ties.
+    -- Find the maximum vote count and all options at that count.
+    local maxCount = 0
     for _, opt in ipairs(active.def.options) do
         local c = counts[opt.id] or 0
-        if c > winnerCount then
-            winnerId = opt.id
-            winnerCount = c
-        end
+        if c > maxCount then maxCount = c end
     end
-
-    local winningOption: Votes.VoteOption? = nil
+    local tied = {}
     for _, opt in ipairs(active.def.options) do
-        if opt.id == winnerId then
-            winningOption = opt
-            break
+        if (counts[opt.id] or 0) == maxCount then
+            table.insert(tied, opt.id)
         end
     end
 
-    local notify = Remotes.get("Notify") :: RemoteEvent
-    for _, player in ipairs(Players:GetPlayers()) do
-        notify:FireClient(player, string.format("Vote: %s wins (%d votes).",
-            winningOption and winningOption.label or winnerId, winnerCount))
+    -- Tie-breaker: if multiple options share the max AND at least one
+    -- person voted, push to a duel between the tied voters. Single-option
+    -- max (no tie) or zero-vote case falls through to first listed.
+    if #tied > 1 and maxCount > 0 then
+        local voteId = active.def.id
+        local options = active.def.options
+        local votesCopy: { [number]: string } = {}
+        for k, v in pairs(active.votes) do votesCopy[k] = v end
+        duelService().start(voteId, votesCopy, options, function(winnerId)
+            -- Reopen the active slot just long enough to commit; a duel
+            -- can outlive the original vote object so we re-find the count.
+            local winnerCount = (counts[winnerId] or 0)
+            -- We need `active` to reference the original def for commit;
+            -- since resolve() set active.closing=true above and didn't nil
+            -- it, it's still valid here.
+            commitWinner(winnerId, winnerCount)
+        end)
+        return
     end
 
-    if winningOption then
-        applyOutcome(winningOption.effect)
-    end
-
-    broadcast("CloseVote", { voteId = active.def.id, winner = winnerId })
-    active = nil
+    commitWinner(tied[1] or active.def.options[1].id, maxCount)
 end
 
 local function maybeAutoResolve()

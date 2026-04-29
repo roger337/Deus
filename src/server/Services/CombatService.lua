@@ -17,6 +17,15 @@ local InventoryService = require(script.Parent.InventoryService)
 local VoiceService = require(script.Parent.VoiceService)
 local WorldState = require(script.Parent.Parent.WorldState)
 
+-- Lazy-required to avoid circular dependency.
+local _DuelService = nil
+local function duelService()
+    if not _DuelService then
+        _DuelService = require(script.Parent.DuelService)
+    end
+    return _DuelService
+end
+
 local CombatService = {}
 
 local RECENT_FIRE: { [Player]: number } = {}
@@ -50,10 +59,14 @@ function CombatService.applyDamageToHumanoid(
         def = WeaponMods.applyMods(baseDef, stackMods)
     end
 
-    -- Friendly fire OFF: player-on-player damage is dropped at the boundary.
+    -- Friendly fire OFF in normal play. Exception: if both attacker and
+    -- victim are duelers on opposing sides of an active tie-breaker, allow
+    -- damage. DuelService.canDamageBetween enforces same-duel + opposing-side.
     local victimPlayer = Players:GetPlayerFromCharacter(targetModel)
     if attacker and victimPlayer and victimPlayer ~= attacker then
-        return
+        if not duelService().canDamageBetween(attacker, victimPlayer) then
+            return
+        end
     end
 
     local hum, isEnemy = isHumanoidEnemy(targetModel)

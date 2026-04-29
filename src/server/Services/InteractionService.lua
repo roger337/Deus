@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 
 local Remotes = require(Shared.Remotes)
+local AccessConfig = require(Shared.Config.AccessConfig)
 local DialogService = require(script.Parent.DialogService)
 local InventoryService = require(script.Parent.InventoryService)
 local MissionService = require(script.Parent.MissionService)
@@ -84,6 +85,17 @@ function InteractionService.handleInteraction(player: Player, target: Instance)
         local vendorId = target:GetAttribute("VendorId")
         if typeof(vendorId) == "string" then
             VendorService.openFor(player, vendorId)
+        end
+    elseif kind == "RequestAccess" then
+        local ev = Remotes.get("ShowRequestAccess") :: RemoteEvent
+        ev:FireClient(player)
+    elseif kind == "AdminConsole" then
+        if AccessConfig.isAdmin(player.UserId) then
+            local ev = Remotes.get("ShowAdminConsole") :: RemoteEvent
+            ev:FireClient(player)
+        else
+            local notify = Remotes.get("Notify") :: RemoteEvent
+            notify:FireClient(player, "Owner-only console.")
         end
     end
 end

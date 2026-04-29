@@ -22,6 +22,9 @@ You play an AEGIS contract operative with reverse-engineered biomod implants. Th
 - **Five endings** — Lattice Symbiosis (mass ascension), Quorum Restoration (continued captivity), Network Reset (defiant captivity), Helix Ascension (damnation), Ascension by Faith (refuse all four consoles, walk out). Lattice locks at 3+ civilian deaths; Helix Ascension requires accepting Director Cole's offer; Faith is unavailable to those who joined Helix.
 - **Faction-specific vendors** — AEGIS Quartermaster, Awakened Armorer, Helix Quartermaster. Each gates on faction/flags.
 - **Three save slots per user** — pick on join. Replay routes without erasing prior runs.
+- **Lobby gate** — every player joins into a Lobby map first. Info kiosks (Story / Mechanics / Factions), a vendor preview, a Demo Range door, and a Request-Access terminal. The main game door is gated; the owner approves teams from the Owner Console. Pre-approved team names auto-grant.
+- **Demo Range** — a self-contained training map (firing range, practice lockpick, practice hack, basic loadout). Open to everyone, no access needed. Run it to learn the verbs before requesting access to the campaign.
+- **Tie-breaker duels** — when a co-op vote ends in a tie, the tied voters are teleported to a sealed dueling arena, friendly fire flips on for them only, last side standing wins the vote for the team. Knock-down at 5 HP (clamped at 1 to avoid death + auto-respawn); HP and walk speed restored on duel end; everyone teleported back to where they were.
 - **Branching dialog** — `WorldState` tracks faction, reputation, flags ("defected", "killedVega", "joinedHelix"), counters ("kills", "civiliansKilled"). Dialog gates on a small predicate DSL.
 - **Aug-reactive NPCs** — Dr. Halberg comments on whatever biomods you're running; Vega and Cael notice high-level Targeting and Cloak.
 
@@ -37,6 +40,24 @@ rojo build -o Game.rbxlx
 ```
 
 In Roblox Studio: open a new place → connect the Rojo plugin → press play (F5).
+
+**Before publishing**, edit `src/shared/Config/AccessConfig.lua`:
+
+```lua
+AccessConfig.AdminUserIds   = { 123456789 }   -- your Roblox userId(s)
+AccessConfig.PreApprovedTeams = { "alpha" }   -- (optional) auto-approved team names
+```
+
+Players who join without access land in the lobby. They fill in a team name at the Request Access terminal; you (the admin) approve from the Owner Console in the lobby.
+
+## Lobby flow
+
+1. Player joins → drops into the Lobby map with their slot picker on top.
+2. They read the kiosks, browse the vendor preview, run the Demo Range if they want.
+3. They walk up to the Request Access terminal, press E, type a team name, submit.
+4. The owner (anyone whose UserId is in `AccessConfig.AdminUserIds`) sees the request in the Owner Console and clicks GRANT.
+5. The player gets a notification; they walk through the "Enter Game" pad and the whole session loads AEGIS Tower.
+6. Once granted, access is persisted per-userId in DataStore — they can come and go in subsequent sessions without re-requesting.
 
 ## Controls
 
@@ -66,7 +87,9 @@ In Roblox Studio: open a new place → connect the Rojo plugin → press play (F
 | Defection at Cael | Team vote — majority decides for everyone |
 | Helix recruitment at Director Cole | Team vote |
 | Endings at Vault-7 | Team vote per terminal |
-| Friendly fire | Off |
+| Friendly fire | Off (except inside a tie-breaker duel) |
+| Tie-breaker | Tied voters duel in a sealed arena; last side standing wins |
+| Lobby gate | Owner approves teams; pre-approved team names auto-grant |
 
 ## Branching reference
 
@@ -119,7 +142,8 @@ src/
 │       ├── Objectives.lua
 │       ├── Votes.lua
 │       ├── Vendors.lua
-│       └── VoiceLines.lua
+│       ├── VoiceLines.lua
+│       └── AccessConfig.lua     # set AdminUserIds + PreApprovedTeams here
 ├── server/                       # ServerScriptService.Server
 │   ├── init.server.lua
 │   ├── PlayerData.lua
@@ -138,10 +162,14 @@ src/
 │   │   ├── VoteService.lua
 │   │   ├── VendorService.lua
 │   │   ├── EndingService.lua
-│   │   └── VoiceService.lua
+│   │   ├── VoiceService.lua
+│   │   ├── DuelService.lua       # tie-breaker arena
+│   │   └── AccessService.lua     # lobby gate
 │   └── Maps/
 │       ├── init.lua
 │       ├── MapUtil.lua
+│       ├── Lobby.lua
+│       ├── Demo.lua
 │       ├── Bayfront.lua
 │       ├── AegisTower.lua
 │       ├── HardlineDistrict.lua
@@ -164,6 +192,8 @@ src/
         ├── VoteUI.lua
         ├── VendorUI.lua
         ├── SlotSelectUI.lua
+        ├── RequestAccessUI.lua
+        ├── AdminConsoleUI.lua
         └── Minigames/
             ├── Lockpick.lua
             └── Hack.lua

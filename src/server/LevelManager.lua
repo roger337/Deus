@@ -1,6 +1,9 @@
 --!strict
--- Owns the currently-loaded map. Builds it, despawns it, and handles transitions
--- when players walk through transition triggers.
+-- Owns the currently-loaded map. Builds it, despawns it, handles transitions.
+-- All players share one map at a time; a transition triggered by any player
+-- reloads the map for everyone in the session. Gating predicates apply to
+-- the *triggering* player, so an approved player can bring their squad
+-- through together.
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -12,6 +15,18 @@ local Maps = require(script.Parent.Maps)
 local WorldState = require(script.Parent.WorldState)
 local MissionService = require(script.Parent.Services.MissionService)
 local Remotes = require(Shared.Remotes)
+
+-- Lazy-required to avoid circular dependency (AccessService doesn't need
+-- LevelManager, but importing here at load time would force AccessService
+-- to also be hot at first require, which is fine — keeping the lazy form
+-- for symmetry with other lazy imports).
+local _AccessService = nil
+local function accessService()
+    if not _AccessService then
+        _AccessService = require(script.Parent.Services.AccessService)
+    end
+    return _AccessService
+end
 
 local LevelManager = {}
 
@@ -49,7 +64,6 @@ function LevelManager.load(mapId: string)
     current = mapId
     def.build(folder)
 
-    -- Teleport everyone to the spawn point and trigger arrival objectives.
     for _, player in ipairs(Players:GetPlayers()) do
         LevelManager.placePlayer(player)
         LevelManager.applyArrivalObjectives(player, mapId)
@@ -58,9 +72,6 @@ function LevelManager.load(mapId: string)
     print("[LevelManager] Loaded map:", def.displayName)
 end
 
--- Some maps auto-start an objective on arrival, with the variant chosen
--- based on prior behavior. This is where "objectives change based on prior
--- choices" hooks in.
 function LevelManager.applyArrivalObjectives(player: Player, mapId: string)
     if mapId == "PacificAnchor" then
         local state = WorldState.get(player)
@@ -82,31 +93,44 @@ function LevelManager.placePlayer(player: Player)
     hrp.CFrame = CFrame.new(def.spawnPoint + Vector3.new(0, 4, 0))
 end
 
--- Per-transition gate predicate, keyed by target map id.
--- Returning false denies the transition and shows a notify.
-local function gateFor(targetMap: string): (string?, string?)
-    -- Once defected, the operative cannot return through the front door of
-    -- AEGIS Tower.
+-- Per-transition gate. Returns (predicateExpr?, denyReason?, customCheck?).
+-- The customCheck is a function(player) -> bool, used for non-WorldState
+-- gates (like access).
+type Gate = {
+    predicate: string?,
+    reason: string?,
+    custom: ((Player) -> boolean)?,
+}
+
+local function gateFor(targetMap: string): Gate
     if targetMap == "AegisTower" then
-        return "!flag:defected", "AEGIS has flagged you as a defector. Find another way."
+        return {
+            predicate = "!flag:defected",
+            reason = "AEGIS has flagged you as a defector. Find another way.",
+            custom = function(player)
+                return accessService().hasAccess(player)
+            end,
+        }
     end
-    return nil, nil
+    return {}
 end
 
-function LevelManager.transitionPlayer(player: Player, targetMap: string)
-    local predicate, denyReason = gateFor(targetMap)
-    if predicate and not WorldState.evaluate(player, predicate) then
+function LevelManager.transitionPlayer(player: Player, targetMap: string, requiresAccess: boolean?)
+    local gate = gateFor(targetMap)
+    if gate.predicate and not WorldState.evaluate(player, gate.predicate) then
         local notify = Remotes.get("Notify") :: RemoteEvent
-        notify:FireClient(player, denyReason or "Transition denied.")
+        notify:FireClient(player, gate.reason or "Transition denied.")
         return
     end
-    -- For simplicity, transitions are global: when one player triggers it,
-    -- the level reloads for everyone. (Single-player intent for this game.)
+    if (requiresAccess or gate.custom) and gate.custom and not gate.custom(player) then
+        local notify = Remotes.get("Notify") :: RemoteEvent
+        notify:FireClient(player, "Access required. Use the Request Access terminal in the lobby.")
+        return
+    end
     LevelManager.load(targetMap)
 end
 
 local function watchTransitions()
-    -- Polling: cheap, simple, and avoids per-Touched flooding.
     task.spawn(function()
         while true do
             task.wait(0.5)
@@ -117,6 +141,7 @@ local function watchTransitions()
                 if kind ~= "Transition" then continue end
                 local target = child:GetAttribute("TargetMap")
                 if typeof(target) ~= "string" then continue end
+                local requiresAccess = child:GetAttribute("RequiresAccess") == true
                 local region = child :: BasePart
                 for _, player in ipairs(Players:GetPlayers()) do
                     local char = player.Character
@@ -124,8 +149,8 @@ local function watchTransitions()
                     local hrp = char:FindFirstChild("HumanoidRootPart") :: BasePart?
                     if not hrp then continue end
                     if (hrp.Position - region.Position).Magnitude < math.max(region.Size.X, region.Size.Z) then
-                        LevelManager.transitionPlayer(player, target)
-                        return -- map will reload, restart loop
+                        LevelManager.transitionPlayer(player, target, requiresAccess)
+                        return
                     end
                 end
             end
@@ -134,7 +159,7 @@ local function watchTransitions()
 end
 
 function LevelManager.init()
-    LevelManager.load("LibertyIsland")
+    LevelManager.load("Lobby")
     watchTransitions()
 end
 

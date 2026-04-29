@@ -77,7 +77,9 @@ function InteractionController.start()
             elseif kind == "Hack" then text = "[E] Hack terminal"
             elseif kind == "EndingDirect" then text = "[E] Walk out"
             elseif kind == "MedBot" then text = "[E] Use Med Bot"
-            elseif kind == "Transition" then text = "[E] Travel" end
+            elseif kind == "Transition" then text = "[E] Travel"
+            elseif kind == "RequestAccess" then text = "[E] Request team access"
+            elseif kind == "AdminConsole" then text = "[E] Owner console" end
             label.Text = text
             label.Visible = true
         else

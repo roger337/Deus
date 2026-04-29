@@ -2,6 +2,8 @@
 -- Registry of all map modules.
 
 local Maps = {
+    Lobby         = require(script.Lobby),
+    Demo          = require(script.Demo),
     Bayfront      = require(script.Bayfront),
     AegisTower    = require(script.AegisTower),
     Hardline      = require(script.HardlineDistrict),

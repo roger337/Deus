@@ -57,11 +57,18 @@ local EVENT_NAMES = {
     "CloseVendor",
     "SelectSaveSlot",
     "ShowSlotSelect",
+    "RequestAccess",
+    "AccessUpdate",
+    "AdminGrantAccess",
+    "AdminRevokeAccess",
+    "ShowRequestAccess",
+    "ShowAdminConsole",
 }
 
 local FUNCTION_NAMES = {
     "GetPlayerData",
     "GetWorldInteractables",
+    "AdminListPending",
 }
 
 function Remotes.get(name: string): RemoteEvent | RemoteFunction
