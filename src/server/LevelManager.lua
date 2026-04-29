@@ -44,16 +44,17 @@ local current: string? = nil
 local mapFolder: Folder? = nil
 local ambientSound: Sound? = nil
 
--- Default lighting baseline (matches default.project.json so we can
--- restore between maps that don't specify their own).
+-- Default lighting baseline — used by maps that don't declare their own
+-- `ambient` table. Targets a late-afternoon, slightly overcast feel:
+-- visible but moody, suitable for the cyberpunk tone.
 local DEFAULT_LIGHTING = {
-    Ambient = Color3.fromRGB(40, 40, 50),
-    OutdoorAmbient = Color3.fromRGB(70, 70, 90),
-    Brightness = 2,
-    ClockTime = 21,
-    FogColor = Color3.fromRGB(25, 30, 40),
-    FogEnd = 800,
-    FogStart = 200,
+    Ambient = Color3.fromRGB(80, 80, 90),
+    OutdoorAmbient = Color3.fromRGB(130, 130, 140),
+    Brightness = 2.5,
+    ClockTime = 17,
+    FogColor = Color3.fromRGB(80, 85, 95),
+    FogEnd = 1200,
+    FogStart = 300,
 }
 
 local function applyLighting(props: { [string]: any }?)

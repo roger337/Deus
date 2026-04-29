@@ -42,8 +42,12 @@ local function infoKiosk(folder: Instance, title: string, body: string, pos: Vec
         Color = Color3.fromRGB(15, 20, 30),
         Material = Enum.Material.SmoothPlastic,
     })
+    -- The kiosks line the north wall (z=-55). A Part's default "Front"
+    -- normal points at -Z, which faces the wall behind the kiosk. We want
+    -- the screen visible to the player walking through the lobby (looking
+    -- in the -Z direction), so the GUI lives on the Back face (+Z normal).
     local sg = Instance.new("SurfaceGui")
-    sg.Face = Enum.NormalId.Front
+    sg.Face = Enum.NormalId.Back
     sg.Parent = screen
     sg.CanvasSize = Vector2.new(700, 500)
 

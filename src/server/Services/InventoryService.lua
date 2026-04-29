@@ -129,6 +129,67 @@ function InventoryService.equip(player: Player, itemId: string)
     local data = PlayerData.get(player)
     data.equipped = (itemId ~= "" and itemId) or nil
     InventoryService.replicate(player)
+    InventoryService.updateWeaponVisual(player)
+end
+
+-- Per-weapon visual: a Tool with a sized/colored Handle parented directly
+-- to the character (which auto-equips it into the right hand). The Tool
+-- is purely visual — actual firing logic stays in WeaponController on
+-- the client. CanBeDropped = false so the player can't drop the visual
+-- via Backspace.
+function InventoryService.updateWeaponVisual(player: Player)
+    local char = player.Character
+    if not char then return end
+
+    -- Tear down any existing visual first.
+    local existing = char:FindFirstChild("WeaponVisual")
+    if existing then existing:Destroy() end
+
+    local data = PlayerData.get(player)
+    if not data.equipped then return end
+    local def = Weapons[data.equipped]
+    if not def then return end
+
+    local size, color, material = Vector3.new(0.4, 0.4, 0.4), Color3.fromRGB(60, 60, 70), Enum.Material.Metal
+    if def.slot == "Pistol" then
+        size = Vector3.new(0.5, 0.7, 1.5)
+        color = Color3.fromRGB(40, 40, 50)
+    elseif def.slot == "Rifle" then
+        size = Vector3.new(0.5, 0.9, 3.5)
+        color = Color3.fromRGB(50, 50, 55)
+    elseif def.slot == "Heavy" then
+        size = Vector3.new(0.9, 0.9, 4.5)
+        color = Color3.fromRGB(80, 50, 40)
+    elseif def.slot == "Melee" then
+        if def.id == "RiotProd" then
+            size = Vector3.new(0.3, 0.3, 1.6)
+            color = Color3.fromRGB(80, 80, 90)
+        else
+            size = Vector3.new(0.2, 0.2, 1.4)
+            color = Color3.fromRGB(200, 200, 200)
+        end
+    elseif def.slot == "Demolition" then
+        size = Vector3.new(0.6, 0.6, 0.6)
+        color = Color3.fromRGB(180, 50, 50)
+    end
+
+    local tool = Instance.new("Tool")
+    tool.Name = "WeaponVisual"
+    tool.RequiresHandle = true
+    tool.CanBeDropped = false
+    tool.ManualActivationOnly = true       -- don't fire Activated on click
+    tool.ToolTip = def.name
+
+    local handle = Instance.new("Part")
+    handle.Name = "Handle"
+    handle.Size = size
+    handle.Color = color
+    handle.Material = material
+    handle.CanCollide = false
+    handle.Massless = true
+    handle.Parent = tool
+
+    tool.Parent = char  -- parenting directly to Character auto-equips
 end
 
 function InventoryService.replicate(player: Player)
@@ -138,6 +199,7 @@ function InventoryService.replicate(player: Player)
         inventory = data.inventory,
         equipped = data.equipped,
     })
+    InventoryService.updateWeaponVisual(player)
 end
 
 function InventoryService.replicateStats(player: Player)
