@@ -49,6 +49,13 @@ function CombatService.applyDamageToHumanoid(
         local stackMods = InventoryService.getStackMods(attacker, weaponId)
         def = WeaponMods.applyMods(baseDef, stackMods)
     end
+
+    -- Friendly fire OFF: player-on-player damage is dropped at the boundary.
+    local victimPlayer = Players:GetPlayerFromCharacter(targetModel)
+    if attacker and victimPlayer and victimPlayer ~= attacker then
+        return
+    end
+
     local hum, isEnemy = isHumanoidEnemy(targetModel)
     if not hum then return end
 

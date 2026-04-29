@@ -48,6 +48,10 @@ local EVENT_NAMES = {
     "PlayVoice",
     "WorldStateUpdate",
     "ShowEnding",
+    "OpenVote",
+    "CastVote",
+    "VoteUpdate",
+    "CloseVote",
 }
 
 local FUNCTION_NAMES = {

@@ -4,6 +4,8 @@ A condensed, playable homage to the 2000 Ion Storm classic, built for Roblox Stu
 
 ## Pillars
 
+- **1-4 player co-op** — server cap of 4. Shared world, shared map, shared objective progress; per-player skills, augs, inventory, weapon mods, kill counts. Friendly fire is off (player-on-player damage is dropped at the boundary).
+- **Vote-majority for narrative beats** — defection at Tracer Tong and the three Area 51 endings open a team vote (30s timeout, ties go to first option). The winning option's effect is applied to every player — one canonical narrative per session.
 - **Skills + augmentations + inventory** — three orthogonal progression systems, just like the original.
 - **Multiple solutions** — every level has lethal and non-lethal paths, locked doors that open with a lockpick OR a hack OR a key, hostile patrols you can avoid with stealth/cloak.
 - **Five iconic maps** — Liberty Island (intro), UNATCO HQ (hub), Hell's Kitchen, Hong Kong, Area 51 (endgame).
@@ -12,6 +14,21 @@ A condensed, playable homage to the 2000 Ion Storm classic, built for Roblox Stu
 - **Branching dialog** — talk to Paul Denton, Anna Navarre, Dr. Reyes, Tracer Tong.
 - **Ending choice** — three terminals in Area 51 (Helios merge / Illuminati / Dark Age). The Helios merge is locked if you've killed 3+ civilians during the run.
 - **Branching narrative** — `WorldState` tracks faction, reputation, flags ("defected", "killedAnna"), and counters ("civiliansKilled"). Dialog trees gate options/intros via a small predicate DSL (`flag:defected`, `counter:civiliansKilled<3`, `faction:NSF`). Tracer Tong gives a player-choice defection moment in Hong Kong; defecting closes UNATCO HQ as a transition target. Paul Denton has 5 greeting variants depending on your behavior. Anna Navarre can be confronted and made hostile (or spared) — Paul reacts later.
+
+## Co-op model
+
+| Aspect | Behavior |
+|---|---|
+| Server cap | 4 (`Players.MaxPlayers = 4` in `default.project.json`) |
+| Map state | One shared world; map reload on transition affects everyone |
+| Objective progress | Shared — any player picking up an Ambrosia vial advances all teammates' counters |
+| Skills, augs, inventory, mods, ammo | Per-player |
+| Kill / civilian / KO counters | Per-player (used for personal eligibility) |
+| Defection at Tracer Tong | Team vote — majority decides for everyone |
+| Endings at Area 51 | Team vote per terminal — pass-vote runs the epilogue for all |
+| Friendly fire | Off |
+
+Adding a new vote = one entry in `src/shared/Config/Votes.lua` (`prompt`, `options`, `timeoutSec`) plus a single `effect = "vote:myVote"` line wherever you want to trigger it.
 
 ## Branching reference
 

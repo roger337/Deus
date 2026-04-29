@@ -19,6 +19,7 @@ local CombatService = require(script.Services.CombatService)
 local DialogService = require(script.Services.DialogService)
 local InteractionService = require(script.Services.InteractionService)
 local MissionService = require(script.Services.MissionService)
+local VoteService = require(script.Services.VoteService)
 local EnemyAI = require(script.EnemyAI)
 local LevelManager = require(script.LevelManager)
 
@@ -28,6 +29,7 @@ AugService.init()
 CombatService.init()
 DialogService.init()
 InteractionService.init()
+VoteService.init()
 
 -- =========================================================================
 -- Dialog effect handlers. Declarative effects in Dialog.lua (`hostile:Anna`)

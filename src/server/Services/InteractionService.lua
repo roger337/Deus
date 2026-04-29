@@ -13,6 +13,7 @@ local MissionService = require(script.Parent.MissionService)
 local SkillService = require(script.Parent.SkillService)
 local VoiceService = require(script.Parent.VoiceService)
 local EndingService = require(script.Parent.EndingService)
+local VoteService = require(script.Parent.VoteService)
 
 local InteractionService = {}
 
@@ -94,11 +95,12 @@ function InteractionService.confirmHack(player: Player, target: Instance, succes
     target:SetAttribute("Hacked", true)
     VoiceService.playFor(player, "Mission:hackSuccess")
 
-    -- Endgame terminals carry an EndingId attribute; route them through
-    -- EndingService instead of the generic objective-completion path.
+    -- Endgame terminals carry an EndingId attribute; route them through a
+    -- team vote. The vote's outcome ("ending:Helios" etc.) calls
+    -- EndingService.tryTrigger for every player when majority approves.
     local endingId = target:GetAttribute("EndingId")
     if typeof(endingId) == "string" then
-        EndingService.tryTrigger(player, endingId)
+        VoteService.open("ending" .. endingId)
         return
     end
 

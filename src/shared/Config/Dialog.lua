@@ -261,16 +261,10 @@ local Dialog: { [string]: DialogTree } = {
         nodes = {
             intro = {
                 speaker = "Tracer Tong",
-                text = "JC Denton. I knew your father. UNATCO is not what you think it is — they answer to MJ12. Cut your strings, and I'll show you the truth.",
+                text = "JC Denton. I knew your father. UNATCO is not what you think it is — they answer to MJ12. Cut your strings, and I'll show you the truth. The choice is the team's, not yours alone.",
                 options = {
-                    { text = "Show me. I'm done with UNATCO.", next = "defect_yes",
-                        effect = "flag:defected;flag:metTracerTong;faction:NSF;rep:UNATCO-50;rep:NSF+50",
-                        end_ = true },
-                    { text = "I need time to think.", next = "stall",
-                        effect = "flag:metTracerTong" },
-                    { text = "I'll stay loyal to UNATCO.", next = "loyal",
-                        effect = "flag:metTracerTong;rep:UNATCO+10",
-                        end_ = true },
+                    { text = "Call a team vote on defection.", effect = "vote:defect", end_ = true },
+                    { text = "I need time to think.", next = "stall", effect = "flag:metTracerTong" },
                 },
             },
             stall = {
@@ -292,9 +286,7 @@ local Dialog: { [string]: DialogTree } = {
                 speaker = "Tracer Tong",
                 text = "Made up your mind yet?",
                 options = {
-                    { text = "I'm in. Cut my strings.", next = "defect_yes",
-                        effect = "flag:defected;faction:NSF;rep:UNATCO-50;rep:NSF+50",
-                        end_ = true },
+                    { text = "Call a team vote on defection.", effect = "vote:defect", end_ = true },
                     { text = "Not yet.", next = "stall" },
                 },
             },

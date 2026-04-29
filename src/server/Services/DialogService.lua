@@ -9,6 +9,7 @@ local PlayerData = require(script.Parent.Parent.PlayerData)
 local InventoryService = require(script.Parent.InventoryService)
 local MissionService = require(script.Parent.MissionService)
 local VoiceService = require(script.Parent.VoiceService)
+local VoteService = require(script.Parent.VoteService)
 local WorldState = require(script.Parent.Parent.WorldState)
 
 local DialogService = {}
@@ -42,6 +43,10 @@ local function applyEffect(player: Player, expr: string)
                 local n = tonumber(num) or 0
                 WorldState.adjustReputation(player, f, sign == "-" and -n or n)
             end
+        elseif kind == "vote" then
+            -- Open a team vote; outcome's effects will apply to all players
+            -- when the vote resolves.
+            VoteService.open(body)
         elseif kind == "hostile" then
             local h = effectHandlers["hostile:" .. body]
             if h then h(player) end

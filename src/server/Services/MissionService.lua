@@ -1,4 +1,11 @@
 --!strict
+-- Co-op-aware mission service. Objectives are TEAM objectives in this game:
+--   * MissionService.start(player, id)   starts for the whole team.
+--   * MissionService.advance(player, id) advances for the whole team.
+--   * MissionService.startSolo / advanceSolo are still available if you want
+--     a single-player-only effect.
+
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 
@@ -10,7 +17,7 @@ local VoiceService = require(script.Parent.VoiceService)
 
 local MissionService = {}
 
-function MissionService.start(player: Player, objectiveId: string)
+function MissionService.startSolo(player: Player, objectiveId: string)
     local def = Objectives[objectiveId]
     if not def then return end
     local data = PlayerData.get(player)
@@ -22,7 +29,7 @@ function MissionService.start(player: Player, objectiveId: string)
     VoiceService.playFor(player, "Mission:objectiveAdded")
 end
 
-function MissionService.advance(player: Player, objectiveId: string, amount: number?)
+function MissionService.advanceSolo(player: Player, objectiveId: string, amount: number?)
     local def = Objectives[objectiveId]
     if not def then return end
     local data = PlayerData.get(player)
@@ -37,6 +44,19 @@ function MissionService.advance(player: Player, objectiveId: string, amount: num
         VoiceService.playFor(player, "Mission:objectiveComplete")
     end
     MissionService.replicate(player)
+end
+
+-- Team versions: fan out to all online players.
+function MissionService.start(_player: Player, objectiveId: string)
+    for _, p in ipairs(Players:GetPlayers()) do
+        MissionService.startSolo(p, objectiveId)
+    end
+end
+
+function MissionService.advance(_player: Player, objectiveId: string, amount: number?)
+    for _, p in ipairs(Players:GetPlayers()) do
+        MissionService.advanceSolo(p, objectiveId, amount)
+    end
 end
 
 function MissionService.replicate(player: Player)
