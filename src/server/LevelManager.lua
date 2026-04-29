@@ -184,7 +184,11 @@ function LevelManager.transitionPlayer(player: Player, targetMap: string, requir
         notify:FireClient(player, gate.reason or "Transition denied.")
         return
     end
-    if (requiresAccess or gate.custom) and gate.custom and not gate.custom(player) then
+    -- Access check only runs when the triggering pad explicitly asks for it
+    -- (the lobby's "Enter Game" pad sets RequiresAccess = true). The campaign
+    -- map helipad pads don't, so once the player is past the lobby they can
+    -- bounce between AEGIS Tower and missions freely.
+    if requiresAccess and gate.custom and not gate.custom(player) then
         local notify = Remotes.get("Notify") :: RemoteEvent
         notify:FireClient(player, "Access required. Use the Request Access terminal in the lobby.")
         return
