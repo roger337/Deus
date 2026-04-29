@@ -26,6 +26,14 @@ local function duelService()
     return _DuelService
 end
 
+local _DemoStatsService = nil
+local function demoStatsService()
+    if not _DemoStatsService then
+        _DemoStatsService = require(script.Parent.DemoStatsService)
+    end
+    return _DemoStatsService
+end
+
 local CombatService = {}
 
 local RECENT_FIRE: { [Player]: number } = {}
@@ -93,6 +101,7 @@ function CombatService.applyDamageToHumanoid(
             if attacker and isEnemy then
                 local data = PlayerData.get(attacker)
                 data.knockouts += 1
+                demoStatsService().recordEvent(attacker, "knockout")
                 InventoryService.replicateStats(attacker)
             end
         end
@@ -105,6 +114,7 @@ function CombatService.applyDamageToHumanoid(
             if faction == "Hostile" then
                 data.kills += 1
                 WorldState.bumpCounter(attacker, "kills", 1)
+                demoStatsService().recordEvent(attacker, "kill")
                 if targetModel:GetAttribute("CharacterId") == "Vega" then
                     WorldState.setFlag(attacker, "killedVega", true)
                 end
@@ -112,6 +122,7 @@ function CombatService.applyDamageToHumanoid(
                 WorldState.bumpCounter(attacker, "civiliansKilled", 1)
                 WorldState.adjustReputation(attacker, "Civilian", -10)
                 WorldState.adjustReputation(attacker, "AEGIS", -5)
+                demoStatsService().recordEvent(attacker, "civilianKilled")
                 local notify = Remotes.get("Notify") :: RemoteEvent
                 notify:FireClient(attacker, "[!] Civilian killed.")
             end
@@ -192,6 +203,7 @@ function CombatService.applyDamageToPlayer(player: Player, amount: number, sourc
     local prevHealth = data.health
     data.health = math.max(0, data.health - amount)
     InventoryService.replicateStats(player)
+    demoStatsService().recordEvent(player, "hitTaken")
     local fb = Remotes.get("DamageFeedback") :: RemoteEvent
     fb:FireClient(player, amount, source)
 

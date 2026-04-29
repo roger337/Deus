@@ -222,6 +222,16 @@ function DuelService.finish(winnerOptionId: string)
         notify:FireClient(p, string.format("Duel resolved: %s wins.", winnerOptionId))
     end
 
+    -- Victory banner for everyone.
+    local showEv = Remotes.get("ShowDuelBanner") :: RemoteEvent
+    for _, p in ipairs(Players:GetPlayers()) do
+        showEv:FireClient(p, {
+            stage = "victory",
+            winnerOption = winnerOptionId,
+            winnerLabel = winnerOptionId,
+        })
+    end
+
     -- Restore everyone.
     for _, side in pairs(active.sides) do
         for _, p in ipairs(side) do
@@ -297,6 +307,20 @@ function DuelService.start(voteId: string, votes: { [number]: string }, options,
             end
             teleport(p, pos)
         end
+    end
+
+    -- Broadcast the dramatic banner to all clients with team rosters.
+    local sidesPayload: { [string]: { string } } = {}
+    for _, optId in ipairs(nonEmpty) do
+        local roster: { string } = {}
+        for _, p in ipairs(sides[optId]) do
+            table.insert(roster, p.Name)
+        end
+        sidesPayload[optId] = roster
+    end
+    local showEv = Remotes.get("ShowDuelBanner") :: RemoteEvent
+    for _, p in ipairs(Players:GetPlayers()) do
+        showEv:FireClient(p, { stage = "start", sides = sidesPayload })
     end
 
     task.spawn(watchHealth)

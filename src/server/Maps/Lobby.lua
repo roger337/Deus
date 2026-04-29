@@ -16,6 +16,22 @@ Lobby.id = "Lobby"
 Lobby.displayName = "Lobby"
 Lobby.spawnPoint = Vector3.new(0, 4, 0)
 
+-- Warmer civic-atrium feel for the lobby: brighter ambient, amber fog,
+-- midday clock. Music is a placeholder — drop in a `rbxassetid://NUMBER`
+-- for an audio asset you own to enable it. Empty string = silence.
+Lobby.ambient = {
+    lighting = {
+        Ambient        = Color3.fromRGB(70, 60, 50),
+        OutdoorAmbient = Color3.fromRGB(120, 100, 80),
+        Brightness     = 2.5,
+        ClockTime      = 12,
+        FogColor       = Color3.fromRGB(180, 160, 130),
+        FogStart       = 60,
+        FogEnd         = 400,
+    },
+    music = "",  -- e.g. "rbxassetid://123456789"
+}
+
 local function infoKiosk(folder: Instance, title: string, body: string, pos: Vector3)
     local stand = MapUtil.box(folder, pos, Vector3.new(8, 0.5, 4),
         Color3.fromRGB(40, 40, 50), Enum.Material.Metal)

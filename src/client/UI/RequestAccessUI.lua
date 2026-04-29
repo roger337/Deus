@@ -121,6 +121,10 @@ local function show()
     end)
 end
 
+-- Public hook so other UIs (e.g. DemoStatsUI's "Request Access" CTA button)
+-- can open the modal locally without round-tripping through a remote.
+RequestAccessUI._show = show
+
 function RequestAccessUI.start()
     local ev = Remotes.get("ShowRequestAccess") :: RemoteEvent
     ev.OnClientEvent:Connect(show)

@@ -12,6 +12,21 @@ Vault7.id = "Vault7"
 Vault7.displayName = "Vault-7 (Sierras)"
 Vault7.spawnPoint = Vector3.new(0, 4, 100)
 
+-- Deep emergency-red ambient. The endgame chamber should feel like the
+-- floor of the world.
+Vault7.ambient = {
+    lighting = {
+        Ambient        = Color3.fromRGB(50, 20, 20),
+        OutdoorAmbient = Color3.fromRGB(80, 40, 40),
+        Brightness     = 1.5,
+        ClockTime      = 22,
+        FogColor       = Color3.fromRGB(60, 20, 20),
+        FogStart       = 30,
+        FogEnd         = 200,
+    },
+    music = "",
+}
+
 function Vault7.build(folder: Folder)
     -- Sand outdoor zone
     MapUtil.floor(folder, Vector3.new(0, 1, 60), Vector3.new(160, 1, 100),

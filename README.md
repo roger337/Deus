@@ -24,7 +24,9 @@ You play an AEGIS contract operative with reverse-engineered biomod implants. Th
 - **Three save slots per user** — pick on join. Replay routes without erasing prior runs.
 - **Lobby gate** — every player joins into a Lobby map first. Info kiosks (Story / Mechanics / Factions), a vendor preview, a Demo Range door, and a Request-Access terminal. The main game door is gated; the owner approves teams from the Owner Console. Pre-approved team names auto-grant.
 - **Demo Range** — a self-contained training map (firing range, practice lockpick, practice hack, basic loadout). Open to everyone, no access needed. Run it to learn the verbs before requesting access to the campaign.
-- **Tie-breaker duels** — when a co-op vote ends in a tie, the tied voters are teleported to a sealed dueling arena, friendly fire flips on for them only, last side standing wins the vote for the team. Knock-down at 5 HP (clamped at 1 to avoid death + auto-respawn); HP and walk speed restored on duel end; everyone teleported back to where they were.
+- **Tie-breaker duels** — when a co-op vote ends in a tie, the tied voters are teleported to a sealed dueling arena, friendly fire flips on for them only, last side standing wins the vote for the team. Knock-down at 5 HP (clamped at 1 to avoid death + auto-respawn); HP and walk speed restored on duel end; everyone teleported back. Dramatic full-width banner announces the duel and the result.
+- **Per-map ambient** — each map module can declare optional `ambient = { lighting = {...}, music = "rbxassetid://..." }`. LevelManager applies on map load; defaults are restored between maps. Lobby is warm/civic, Demo is sterile fluorescent, Vault-7 is deep emergency-red.
+- **Demo completion stats** — exiting the Demo Range fires a summary screen: kills, knockouts, civilians killed, locks picked, terminals hacked, hits taken, time on range. Includes a Request Access shortcut.
 - **Branching dialog** — `WorldState` tracks faction, reputation, flags ("defected", "killedVega", "joinedHelix"), counters ("kills", "civiliansKilled"). Dialog gates on a small predicate DSL.
 - **Aug-reactive NPCs** — Dr. Halberg comments on whatever biomods you're running; Vega and Cael notice high-level Targeting and Cloak.
 
@@ -164,7 +166,8 @@ src/
 │   │   ├── EndingService.lua
 │   │   ├── VoiceService.lua
 │   │   ├── DuelService.lua       # tie-breaker arena
-│   │   └── AccessService.lua     # lobby gate
+│   │   ├── AccessService.lua     # lobby gate
+│   │   └── DemoStatsService.lua  # per-player demo run stats
 │   └── Maps/
 │       ├── init.lua
 │       ├── MapUtil.lua
@@ -194,6 +197,8 @@ src/
         ├── SlotSelectUI.lua
         ├── RequestAccessUI.lua
         ├── AdminConsoleUI.lua
+        ├── DuelBannerUI.lua
+        ├── DemoStatsUI.lua
         └── Minigames/
             ├── Lockpick.lua
             └── Hack.lua

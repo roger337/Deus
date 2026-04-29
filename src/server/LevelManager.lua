@@ -7,6 +7,8 @@
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
+local Lighting = game:GetService("Lighting")
+local SoundService = game:GetService("SoundService")
 local RunService = game:GetService("RunService")
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -28,10 +30,59 @@ local function accessService()
     return _AccessService
 end
 
+local _DemoStatsService = nil
+local function demoStatsService()
+    if not _DemoStatsService then
+        _DemoStatsService = require(script.Parent.Services.DemoStatsService)
+    end
+    return _DemoStatsService
+end
+
 local LevelManager = {}
 
 local current: string? = nil
 local mapFolder: Folder? = nil
+local ambientSound: Sound? = nil
+
+-- Default lighting baseline (matches default.project.json so we can
+-- restore between maps that don't specify their own).
+local DEFAULT_LIGHTING = {
+    Ambient = Color3.fromRGB(40, 40, 50),
+    OutdoorAmbient = Color3.fromRGB(70, 70, 90),
+    Brightness = 2,
+    ClockTime = 21,
+    FogColor = Color3.fromRGB(25, 30, 40),
+    FogEnd = 800,
+    FogStart = 200,
+}
+
+local function applyLighting(props: { [string]: any }?)
+    local merged: { [string]: any } = {}
+    for k, v in pairs(DEFAULT_LIGHTING) do merged[k] = v end
+    if props then
+        for k, v in pairs(props) do merged[k] = v end
+    end
+    for k, v in pairs(merged) do
+        (Lighting :: any)[k] = v
+    end
+end
+
+local function applyMusic(soundId: string?)
+    if ambientSound then
+        ambientSound:Stop()
+        ambientSound:Destroy()
+        ambientSound = nil
+    end
+    if not soundId or soundId == "" then return end
+    local s = Instance.new("Sound")
+    s.Name = "AmbientMusic"
+    s.SoundId = soundId
+    s.Looped = true
+    s.Volume = 0.4
+    s.Parent = SoundService
+    s:Play()
+    ambientSound = s
+end
 
 local function clearWorld()
     if mapFolder then
@@ -63,6 +114,16 @@ function LevelManager.load(mapId: string)
     mapFolder = folder
     current = mapId
     def.build(folder)
+
+    -- Per-map ambient: lighting + looping music. Maps may declare:
+    --   def.ambient = {
+    --     lighting = { Ambient = ..., FogColor = ..., ... },
+    --     music = "rbxassetid://NUMBER",
+    --   }
+    -- Both are optional. Defaults are restored when not specified.
+    local ambient = (def :: any).ambient
+    applyLighting(ambient and ambient.lighting)
+    applyMusic(ambient and ambient.music)
 
     for _, player in ipairs(Players:GetPlayers()) do
         LevelManager.placePlayer(player)
@@ -127,7 +188,23 @@ function LevelManager.transitionPlayer(player: Player, targetMap: string, requir
         notify:FireClient(player, "Access required. Use the Request Access terminal in the lobby.")
         return
     end
+
+    -- Demo -> anywhere: flush demo stats summary to the leaving player
+    -- BEFORE the map reloads so the UI fires while they're still focused.
+    if current == "Demo" and targetMap ~= "Demo" then
+        for _, p in ipairs(Players:GetPlayers()) do
+            demoStatsService().flushFor(p)
+        end
+    end
+
     LevelManager.load(targetMap)
+
+    -- Anywhere -> Demo: reset counters for everyone now in the map.
+    if targetMap == "Demo" then
+        for _, p in ipairs(Players:GetPlayers()) do
+            demoStatsService().enter(p)
+        end
+    end
 end
 
 local function watchTransitions()

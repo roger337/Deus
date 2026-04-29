@@ -63,6 +63,9 @@ local EVENT_NAMES = {
     "AdminRevokeAccess",
     "ShowRequestAccess",
     "ShowAdminConsole",
+    "ShowDuelBanner",
+    "CloseDuelBanner",
+    "ShowDemoStats",
 }
 
 local FUNCTION_NAMES = {

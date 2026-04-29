@@ -16,6 +16,20 @@ Demo.id = "Demo"
 Demo.displayName = "Demo Range"
 Demo.spawnPoint = Vector3.new(0, 4, 60)
 
+-- Sterile fluorescent-lit training-room feel.
+Demo.ambient = {
+    lighting = {
+        Ambient        = Color3.fromRGB(80, 90, 100),
+        OutdoorAmbient = Color3.fromRGB(150, 160, 170),
+        Brightness     = 2.5,
+        ClockTime      = 14,
+        FogColor       = Color3.fromRGB(180, 190, 200),
+        FogStart       = 100,
+        FogEnd         = 600,
+    },
+    music = "",
+}
+
 local function dummy(parent: Instance, pos: Vector3, name: string)
     local model = Instance.new("Model")
     model.Name = name

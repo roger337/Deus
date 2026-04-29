@@ -16,6 +16,7 @@ local VoiceService = require(script.Parent.VoiceService)
 local EndingService = require(script.Parent.EndingService)
 local VoteService = require(script.Parent.VoteService)
 local VendorService = require(script.Parent.VendorService)
+local DemoStatsService = require(script.Parent.DemoStatsService)
 
 local InteractionService = {}
 
@@ -107,6 +108,7 @@ function InteractionService.confirmLockpick(player: Player, target: Instance, su
     InventoryService.remove(player, "Lockpick", 1)
     target:SetAttribute("Locked", false)
     VoiceService.playFor(player, "Mission:lockpickSuccess")
+    DemoStatsService.recordEvent(player, "lockpicked")
     InteractionService.handleInteraction(player, target)
 end
 
@@ -120,6 +122,7 @@ function InteractionService.confirmHack(player: Player, target: Instance, succes
     InventoryService.remove(player, "Multitool", 1)
     target:SetAttribute("Hacked", true)
     VoiceService.playFor(player, "Mission:hackSuccess")
+    DemoStatsService.recordEvent(player, "hacked")
 
     -- Endgame terminals carry an EndingId attribute; route them through a
     -- team vote. The vote's outcome ("ending:Lattice" etc.) calls
