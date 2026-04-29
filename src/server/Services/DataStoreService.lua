@@ -5,6 +5,7 @@ local DataStoreService = game:GetService("DataStoreService")
 local RunService = game:GetService("RunService")
 
 local PlayerData = require(script.Parent.Parent.PlayerData)
+local WorldState = require(script.Parent.Parent.WorldState)
 
 local SAVE_KEY = "DeusExSave_v1"
 local store: DataStore? = nil
@@ -41,7 +42,12 @@ function module.load(player: Player)
     if ok and typeof(payload) == "table" then
         local data = PlayerData.get(player)
         for k, v in pairs(payload) do
-            (data :: any)[k] = v
+            if k ~= "worldState" then
+                (data :: any)[k] = v
+            end
+        end
+        if typeof(payload.worldState) == "table" then
+            WorldState.deserialize(player, payload.worldState)
         end
     end
 end
@@ -63,6 +69,7 @@ function module.save(player: Player)
         kills = data.kills,
         knockouts = data.knockouts,
         nonLethalRun = data.nonLethalRun,
+        worldState = WorldState.serialize(player),
     }
     retry(function()
         (store :: DataStore):SetAsync(tostring(player.UserId), payload)

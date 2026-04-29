@@ -83,7 +83,7 @@ function Area51.build(folder: Folder)
         Color3.fromRGB(150, 200, 255))
 
     -- Endgame choice consoles
-    local function endChoice(name: string, pos: Vector3, color: Color3, label: string)
+    local function endChoice(name: string, endingId: string, pos: Vector3, color: Color3, label: string)
         local p = MapUtil.part(folder, {
             Name = name,
             Size = Vector3.new(3, 4, 1),
@@ -93,12 +93,12 @@ function Area51.build(folder: Folder)
         })
         p:SetAttribute("InteractionType", "Hack")
         p:SetAttribute("HackDifficulty", 3)
-        p:SetAttribute("ObjectiveId", "HackTerminal")
+        p:SetAttribute("EndingId", endingId)
         MapUtil.label(folder, label, pos + Vector3.new(0, 5, 0), color)
     end
-    endChoice("EndingHelios", Vector3.new(-20, -8, -80), Color3.fromRGB(150, 200, 255), "Merge with Helios")
-    endChoice("EndingIlluminati", Vector3.new(0, -8, -88), Color3.fromRGB(255, 215, 0), "Restore Illuminati")
-    endChoice("EndingDarkAge", Vector3.new(20, -8, -80), Color3.fromRGB(120, 30, 30), "Trigger Dark Age")
+    endChoice("EndingHelios", "Helios", Vector3.new(-20, -8, -80), Color3.fromRGB(150, 200, 255), "Merge with Helios")
+    endChoice("EndingIlluminati", "Illuminati", Vector3.new(0, -8, -88), Color3.fromRGB(255, 215, 0), "Restore Illuminati")
+    endChoice("EndingDarkAge", "DarkAge", Vector3.new(20, -8, -80), Color3.fromRGB(120, 30, 30), "Trigger Dark Age")
 
     -- MJ12 commandos
     EnemyAI.run(EnemyAI.spawn(Vector3.new(-30, 4, 50), "AssaultRifle"))

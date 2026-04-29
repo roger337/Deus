@@ -97,6 +97,60 @@ function HUD.start()
     wLbl.TextSize = 18
     wLbl.Parent = wPanel
 
+    -- Top-left: faction chip + civilian-harm warning
+    local factionChip = Instance.new("Frame")
+    factionChip.Position = UDim2.fromOffset(16, 16)
+    factionChip.Size = UDim2.fromOffset(220, 30)
+    factionChip.BackgroundColor3 = Theme.Panel
+    factionChip.BackgroundTransparency = 0.2
+    factionChip.BorderSizePixel = 0
+    factionChip.Parent = sg
+    local fStroke = stroke:Clone()
+    fStroke.Parent = factionChip
+    local factionLbl = Instance.new("TextLabel")
+    factionLbl.Size = UDim2.fromScale(1, 1)
+    factionLbl.BackgroundTransparency = 1
+    factionLbl.Font = Theme.Font
+    factionLbl.TextSize = 14
+    factionLbl.TextColor3 = Theme.Text
+    factionLbl.Text = "[FACTION] UNATCO"
+    factionLbl.Parent = factionChip
+
+    local civWarn = Instance.new("TextLabel")
+    civWarn.Position = UDim2.fromOffset(16, 50)
+    civWarn.Size = UDim2.fromOffset(260, 18)
+    civWarn.BackgroundTransparency = 1
+    civWarn.Font = Theme.Font
+    civWarn.TextSize = 12
+    civWarn.TextColor3 = Theme.Bad
+    civWarn.TextXAlignment = Enum.TextXAlignment.Left
+    civWarn.Text = ""
+    civWarn.Parent = sg
+
+    local wsEv = Remotes.get("WorldStateUpdate") :: RemoteEvent
+    wsEv.OnClientEvent:Connect(function(payload: any)
+        if payload.faction then
+            factionLbl.Text = string.format("[FACTION] %s", payload.faction)
+            if payload.faction == "NSF" then
+                factionLbl.TextColor3 = Color3.fromRGB(220, 100, 100)
+            elseif payload.faction == "UNATCO" then
+                factionLbl.TextColor3 = Color3.fromRGB(180, 220, 255)
+            else
+                factionLbl.TextColor3 = Theme.TextDim
+            end
+        end
+        if payload.counters and payload.flags then
+            local civ = payload.counters.civiliansKilled or 0
+            if payload.flags.heliosLocked then
+                civWarn.Text = string.format("Helios merge locked (civilians: %d)", civ)
+            elseif civ > 0 then
+                civWarn.Text = string.format("Civilians killed: %d / 3", civ)
+            else
+                civWarn.Text = ""
+            end
+        end
+    end)
+
     -- Top-right: objectives
     local objPanel = Instance.new("Frame")
     objPanel.AnchorPoint = Vector2.new(1, 0)

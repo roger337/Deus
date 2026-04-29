@@ -100,6 +100,9 @@ function HellsKitchen.build(folder: Folder)
     -- Civilians / informant
     MapUtil.npc(folder, "Sandra Renton", Vector3.new(30, 3, 50), "JaimeReyes",
         Color3.fromRGB(140, 80, 100))
+    MapUtil.civilian(folder, "Bartender", Vector3.new(45, 3, -20))
+    MapUtil.civilian(folder, "Bystander", Vector3.new(15, 3, 30))
+    MapUtil.civilian(folder, "Newspaper Vendor", Vector3.new(-25, 3, 20))
 
     -- NSF gangsters
     EnemyAI.run(EnemyAI.spawn(Vector3.new(-20, 4, -30), "Pistol10mm"))

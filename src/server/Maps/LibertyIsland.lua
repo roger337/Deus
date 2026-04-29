@@ -94,7 +94,8 @@ function LibertyIsland.build(folder: Folder)
     -- Friendly NPCs at the dock
     MapUtil.npc(folder, "Paul Denton", Vector3.new(-8, 3, 220), "PaulDenton", Color3.fromRGB(40, 50, 90))
     MapUtil.npc(folder, "Dr. Reyes", Vector3.new(8, 3, 220), "JaimeReyes", Color3.fromRGB(180, 180, 180))
-    MapUtil.npc(folder, "Anna Navarre", Vector3.new(0, 3, 240), "AnnaNavarre", Color3.fromRGB(60, 60, 60))
+    local anna = MapUtil.npc(folder, "Anna Navarre", Vector3.new(0, 3, 240), "AnnaNavarre", Color3.fromRGB(60, 60, 60))
+    anna:SetAttribute("CharacterId", "Anna")
 
     -- Transition: extraction boat back to UNATCO HQ
     MapUtil.transition(folder, "ToUNATCO", Vector3.new(0, 4, 250), Vector3.new(8, 8, 4), "UNATCO_HQ")

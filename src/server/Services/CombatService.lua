@@ -15,6 +15,7 @@ local SkillService = require(script.Parent.SkillService)
 local AugService = require(script.Parent.AugService)
 local InventoryService = require(script.Parent.InventoryService)
 local VoiceService = require(script.Parent.VoiceService)
+local WorldState = require(script.Parent.Parent.WorldState)
 
 local CombatService = {}
 
@@ -77,10 +78,23 @@ function CombatService.applyDamageToHumanoid(
         end
     else
         hum:TakeDamage(damage)
-        if hum.Health <= 0 and attacker and isEnemy then
+        if hum.Health <= 0 and attacker then
+            local faction = targetModel:GetAttribute("Faction")
             local data = PlayerData.get(attacker)
-            data.kills += 1
             data.nonLethalRun = false
+            if faction == "NSF" or faction == "Hostile" then
+                data.kills += 1
+                WorldState.bumpCounter(attacker, "kills", 1)
+                if targetModel.Name == "Anna Navarre" or targetModel:GetAttribute("CharacterId") == "Anna" then
+                    WorldState.setFlag(attacker, "killedAnna", true)
+                end
+            elseif faction == "Civilian" then
+                WorldState.bumpCounter(attacker, "civiliansKilled", 1)
+                WorldState.adjustReputation(attacker, "Civilian", -10)
+                WorldState.adjustReputation(attacker, "UNATCO", -5)
+                local notify = Remotes.get("Notify") :: RemoteEvent
+                notify:FireClient(attacker, "[!] Civilian killed.")
+            end
             InventoryService.replicateStats(attacker)
         end
     end

@@ -6,7 +6,12 @@ local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Maps = require(script.Parent.Maps)
+local WorldState = require(script.Parent.WorldState)
+local MissionService = require(script.Parent.Services.MissionService)
+local Remotes = require(Shared.Remotes)
 
 local LevelManager = {}
 
@@ -44,12 +49,29 @@ function LevelManager.load(mapId: string)
     current = mapId
     def.build(folder)
 
-    -- Teleport everyone to the spawn point.
+    -- Teleport everyone to the spawn point and trigger arrival objectives.
     for _, player in ipairs(Players:GetPlayers()) do
         LevelManager.placePlayer(player)
+        LevelManager.applyArrivalObjectives(player, mapId)
     end
 
     print("[LevelManager] Loaded map:", def.displayName)
+end
+
+-- Some maps auto-start an objective on arrival, with the variant chosen
+-- based on prior behavior. This is where "objectives change based on prior
+-- choices" hooks in.
+function LevelManager.applyArrivalObjectives(player: Player, mapId: string)
+    if mapId == "HongKong" then
+        local state = WorldState.get(player)
+        local pacifist = (state.counters.civiliansKilled or 0) == 0
+            and (state.counters.kills or 0) <= 5
+        local objectiveId = pacifist and "HongKong_Stealth" or "HongKong_Assault"
+        if not state.flags["startedHongKong"] then
+            MissionService.start(player, objectiveId)
+            WorldState.setFlag(player, "startedHongKong", true)
+        end
+    end
 end
 
 function LevelManager.placePlayer(player: Player)
@@ -60,7 +82,23 @@ function LevelManager.placePlayer(player: Player)
     hrp.CFrame = CFrame.new(def.spawnPoint + Vector3.new(0, 4, 0))
 end
 
+-- Per-transition gate predicate, keyed by "<sourceMap>->" + targetMap.
+-- Returning false denies the transition and shows a notify.
+local function gateFor(targetMap: string): (string?, string?)
+    -- Once defected, JC cannot return through the front door of UNATCO HQ.
+    if targetMap == "UNATCO_HQ" then
+        return "!flag:defected", "UNATCO has flagged you as a defector. Find another way."
+    end
+    return nil, nil
+end
+
 function LevelManager.transitionPlayer(player: Player, targetMap: string)
+    local predicate, denyReason = gateFor(targetMap)
+    if predicate and not WorldState.evaluate(player, predicate) then
+        local notify = Remotes.get("Notify") :: RemoteEvent
+        notify:FireClient(player, denyReason or "Transition denied.")
+        return
+    end
     -- For simplicity, transitions are global: when one player triggers it,
     -- the level reloads for everyone. (Single-player intent for this game.)
     LevelManager.load(targetMap)

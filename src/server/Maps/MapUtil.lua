@@ -158,6 +158,63 @@ function MapUtil.transition(parent: Instance, name: string, pos: Vector3, size: 
     return p
 end
 
+-- Civilian: a non-hostile humanoid the player CAN kill but shouldn't.
+-- Faction = "Civilian" so CombatService can track civilian casualties.
+function MapUtil.civilian(parent: Instance, name: string, pos: Vector3, treeId: string?): Model
+    local model = Instance.new("Model")
+    model.Name = name
+    model:SetAttribute("Faction", "Civilian")
+    if treeId then
+        model:SetAttribute("InteractionType", "NPC")
+        model:SetAttribute("DialogTree", treeId)
+    end
+
+    local hrp = Instance.new("Part")
+    hrp.Name = "HumanoidRootPart"
+    hrp.Size = Vector3.new(2, 4, 1)
+    hrp.Position = pos
+    hrp.Color = Color3.fromRGB(140, 110, 90)
+    hrp.Material = Enum.Material.SmoothPlastic
+    hrp.Parent = model
+    if treeId then
+        hrp:SetAttribute("InteractionType", "NPC")
+        hrp:SetAttribute("DialogTree", treeId)
+    end
+
+    local head = Instance.new("Part")
+    head.Name = "Head"
+    head.Shape = Enum.PartType.Ball
+    head.Size = Vector3.new(1.4, 1.4, 1.4)
+    head.Position = pos + Vector3.new(0, 2.5, 0)
+    head.Color = Color3.fromRGB(220, 180, 160)
+    head.Parent = model
+
+    local hum = Instance.new("Humanoid")
+    hum.MaxHealth = 60
+    hum.Health = 60
+    hum.WalkSpeed = 0
+    hum.Parent = model
+
+    local bb = Instance.new("BillboardGui")
+    bb.Adornee = head
+    bb.Size = UDim2.new(0, 120, 0, 22)
+    bb.StudsOffset = Vector3.new(0, 1.6, 0)
+    bb.AlwaysOnTop = true
+    bb.Parent = head
+    local lbl = Instance.new("TextLabel")
+    lbl.BackgroundTransparency = 1
+    lbl.Size = UDim2.new(1, 0, 1, 0)
+    lbl.TextColor3 = Color3.fromRGB(220, 220, 160)
+    lbl.Font = Enum.Font.Code
+    lbl.TextScaled = true
+    lbl.Text = name .. "  [civilian]"
+    lbl.Parent = bb
+
+    model.PrimaryPart = hrp
+    model.Parent = parent
+    return model
+end
+
 function MapUtil.label(parent: Instance, name: string, pos: Vector3, color: Color3?)
     local p = MapUtil.part(parent, {
         Name = "Label_" .. name,

@@ -43,6 +43,22 @@ local Objectives: { [string]: ObjectiveDef } = {
         target = 1,
         rewardSkillPoints = 750,
     },
+    HongKong_Stealth = {
+        id = "HongKong_Stealth",
+        title = "Hong Kong: Quiet Infiltration",
+        description = "Tracer Tong's intel must stay clean. Reach Versalife without raising an alarm.",
+        primary = true,
+        target = 1,
+        rewardSkillPoints = 1500,
+    },
+    HongKong_Assault = {
+        id = "HongKong_Assault",
+        title = "Hong Kong: Hard Entry",
+        description = "Subtlety is no longer an option. Force entry into Versalife and recover the data cube.",
+        primary = true,
+        target = 1,
+        rewardSkillPoints = 1000,
+    },
 }
 
 return Objectives

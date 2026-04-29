@@ -12,6 +12,7 @@ local InventoryService = require(script.Parent.InventoryService)
 local MissionService = require(script.Parent.MissionService)
 local SkillService = require(script.Parent.SkillService)
 local VoiceService = require(script.Parent.VoiceService)
+local EndingService = require(script.Parent.EndingService)
 
 local InteractionService = {}
 
@@ -90,12 +91,21 @@ function InteractionService.confirmHack(player: Player, target: Instance, succes
     if target:GetAttribute("InteractionType") ~= "Hack" then return end
     if not InventoryService.has(player, "Multitool", 1) then return end
     InventoryService.remove(player, "Multitool", 1)
+    target:SetAttribute("Hacked", true)
+    VoiceService.playFor(player, "Mission:hackSuccess")
+
+    -- Endgame terminals carry an EndingId attribute; route them through
+    -- EndingService instead of the generic objective-completion path.
+    local endingId = target:GetAttribute("EndingId")
+    if typeof(endingId) == "string" then
+        EndingService.tryTrigger(player, endingId)
+        return
+    end
+
     local objectiveId = target:GetAttribute("ObjectiveId")
     if typeof(objectiveId) == "string" then
         MissionService.advance(player, objectiveId, math.huge)
     end
-    target:SetAttribute("Hacked", true)
-    VoiceService.playFor(player, "Mission:hackSuccess")
 end
 
 function InteractionService.init()

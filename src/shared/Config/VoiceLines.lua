@@ -97,6 +97,11 @@ local VoiceLines: { [string]: VoiceLine } = {
     ["Mission:hackFail"]          = { assetId = "", subtitle = "Access denied.",          duration = 2 },
     ["Mission:lockpickSuccess"]   = { assetId = "", subtitle = "",                        duration = 1 },
 
+    -- Endings (each plays as the epilogue UI fades in).
+    ["Ending:Helios"]      = { assetId = "", subtitle = "",                                duration = 6, pitch = 1.0 },
+    ["Ending:Illuminati"]  = { assetId = "", subtitle = "",                                duration = 6, pitch = 0.95 },
+    ["Ending:DarkAge"]     = { assetId = "", subtitle = "",                                duration = 6, pitch = 0.85 },
+
     --[[ ============================================================
          JC DENTON BARKS — when the player takes damage, picks up
          items, etc. (Optional, but DX-flavored.)

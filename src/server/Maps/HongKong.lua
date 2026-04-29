@@ -71,10 +71,16 @@ function HongKong.build(folder: Folder)
     MapUtil.door(folder, Vector3.new(-30, 5, 50), true, 3)
     MapUtil.terminal(folder, Vector3.new(-30, 4, 30), 3, "HackTerminal")
 
-    -- Tracer Tong's clinic (open)
+    -- Tracer Tong's clinic (open). Tong's dialog is the player-choice
+    -- defection moment — see Dialog.lua TracerTong tree.
     MapUtil.door(folder, Vector3.new(30, 5, -50), false)
-    MapUtil.npc(folder, "Tracer Tong", Vector3.new(35, 3, -55), "JaimeReyes",
+    MapUtil.npc(folder, "Tracer Tong", Vector3.new(35, 3, -55), "TracerTong",
         Color3.fromRGB(80, 60, 40))
+
+    -- Hong Kong civilians.
+    MapUtil.civilian(folder, "Hawker", Vector3.new(40, 3, -30))
+    MapUtil.civilian(folder, "Vendor", Vector3.new(-40, 3, -30))
+    MapUtil.civilian(folder, "Pedestrian", Vector3.new(0, 3, 60))
 
     -- MJ12 commandos
     EnemyAI.run(EnemyAI.spawn(Vector3.new(-20, 4, 0), "AssaultRifle"))

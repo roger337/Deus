@@ -10,7 +10,30 @@ A condensed, playable homage to the 2000 Ion Storm classic, built for Roblox Stu
 - **Three enemy kinds** — NSF human grunts (radio chatter, ranged weapons), Security Bots (wheeled, laser, EMP-vulnerable), Spider Bots (skitter, melee zap). All share the same state machine but use different vision cones, weapons, voice keys, and visuals — see `EnemyAI.lua`.
 - **11 weapons + 9 weapon mods** — pistols, rifles, sniper, GEP gun, LAMs, throwing knives, plasma rifle, stealth pistol, riot prod, combat knife. Mods (accuracy, range, recoil, reload, clip, scope, laser, silencer, damage) attach to compatible weapons and modify effective stats at fire time.
 - **Branching dialog** — talk to Paul Denton, Anna Navarre, Dr. Reyes, Tracer Tong.
-- **Ending choice** — three terminals in Area 51 echo the three classic endings (Helios merge / Illuminati / Dark Age).
+- **Ending choice** — three terminals in Area 51 (Helios merge / Illuminati / Dark Age). The Helios merge is locked if you've killed 3+ civilians during the run.
+- **Branching narrative** — `WorldState` tracks faction, reputation, flags ("defected", "killedAnna"), and counters ("civiliansKilled"). Dialog trees gate options/intros via a small predicate DSL (`flag:defected`, `counter:civiliansKilled<3`, `faction:NSF`). Tracer Tong gives a player-choice defection moment in Hong Kong; defecting closes UNATCO HQ as a transition target. Paul Denton has 5 greeting variants depending on your behavior. Anna Navarre can be confronted and made hostile (or spared) — Paul reacts later.
+
+## Branching reference
+
+Predicate DSL (used in `Dialog.lua`'s `requires` and per-tree `selectStart`):
+
+| Form | Meaning |
+|---|---|
+| `flag:foo` / `!flag:foo` | `WorldState.flags.foo` is/isn't truthy |
+| `faction:NSF` / `!faction:UNATCO` | current faction |
+| `counter:kills>=10` (`>`, `<`, `<=`, `==`) | counter comparison |
+| `rep:UNATCO<0` | reputation comparison |
+| `;` | AND clauses inside a single predicate |
+| `\|` | OR clauses across whole predicate |
+
+Effects (used in `DialogOption.effect` — semicolon-chained):
+
+| Form | Meaning |
+|---|---|
+| `flag:foo` / `!flag:foo` | set/clear a named flag |
+| `faction:NSF` | switch faction |
+| `rep:UNATCO+10` / `rep:NSF-25` | adjust reputation |
+| `hostile:Anna` | call a registered code handler (e.g. flip Anna NPC to enemy) |
 
 ## Setup
 

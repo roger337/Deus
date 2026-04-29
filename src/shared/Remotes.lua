@@ -46,6 +46,8 @@ local EVENT_NAMES = {
     "DamageFeedback",
     "Notify",
     "PlayVoice",
+    "WorldStateUpdate",
+    "ShowEnding",
 }
 
 local FUNCTION_NAMES = {
