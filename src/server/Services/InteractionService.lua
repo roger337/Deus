@@ -74,6 +74,15 @@ function InteractionService.handleInteraction(player: Player, target: Instance)
     elseif kind == "Hack" then
         local ev = Remotes.get("AttemptHack") :: RemoteEvent
         ev:FireClient(player, target, target:GetAttribute("HackDifficulty") or 1)
+    elseif kind == "Transition" then
+        -- Walking through a transition pad is normally enough (LevelManager's
+        -- watcher polls), but pressing E should also work for accessibility.
+        local targetMap = target:GetAttribute("TargetMap")
+        local requiresAccess = target:GetAttribute("RequiresAccess") == true
+        if typeof(targetMap) == "string" then
+            local LevelManager = require(script.Parent.Parent.LevelManager)
+            LevelManager.transitionPlayer(player, targetMap, requiresAccess)
+        end
     elseif kind == "EndingDirect" then
         -- Used by the Faith path exit door: no minigame, no consumables;
         -- the act of choosing IS the gameplay. Open the configured ending

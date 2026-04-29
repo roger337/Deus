@@ -212,7 +212,9 @@ local function watchTransitions()
         while true do
             task.wait(0.5)
             if not mapFolder then continue end
+            local fired = false
             for _, child in ipairs(mapFolder:GetChildren()) do
+                if fired then break end
                 if not child:IsA("BasePart") then continue end
                 local kind = child:GetAttribute("InteractionType")
                 if kind ~= "Transition" then continue end
@@ -227,7 +229,8 @@ local function watchTransitions()
                     if not hrp then continue end
                     if (hrp.Position - region.Position).Magnitude < math.max(region.Size.X, region.Size.Z) then
                         LevelManager.transitionPlayer(player, target, requiresAccess)
-                        return
+                        fired = true
+                        break  -- map reloaded; iterators are stale; restart watch loop
                     end
                 end
             end
