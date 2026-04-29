@@ -1,23 +1,24 @@
 --!strict
--- Mission 3: Hong Kong — Tonnochi Road / Versalife labs.
--- Neon-lit street with Tracer Tong's lab entrance and Versalife tower entrance.
+-- Mission 3: Pacific Anchor. Free-port city. Neon street between corporate
+-- towers; Cael's safehouse on the south side, Helix Tower north. The
+-- defection moment with Cael lives here.
 
 local MapUtil = require(script.Parent.MapUtil)
 local EnemyAI = require(script.Parent.Parent.EnemyAI)
 
-local HongKong = {}
+local PacificAnchor = {}
 
-HongKong.id = "HongKong"
-HongKong.displayName = "Hong Kong - Tonnochi Road"
-HongKong.spawnPoint = Vector3.new(0, 4, 100)
+PacificAnchor.id = "PacificAnchor"
+PacificAnchor.displayName = "Pacific Anchor"
+PacificAnchor.spawnPoint = Vector3.new(0, 4, 100)
 
-function HongKong.build(folder: Folder)
+function PacificAnchor.build(folder: Folder)
     -- Wet street
     MapUtil.floor(folder, Vector3.new(0, 1, 0), Vector3.new(120, 1, 240),
         Color3.fromRGB(30, 30, 38))
-    MapUtil.spawn(folder, "JCSpawn_HK", HongKong.spawnPoint, Color3.fromRGB(200, 0, 200))
+    MapUtil.spawn(folder, "OperativeSpawn_Anchor", PacificAnchor.spawnPoint, Color3.fromRGB(200, 0, 200))
 
-    -- Towers either side, lit with neon
+    -- Towers either side, neon-lit
     local function tower(x: number, z: number, color: Color3, signText: string)
         MapUtil.box(folder, Vector3.new(x, 40, z), Vector3.new(40, 80, 40),
             Color3.fromRGB(40, 40, 50), Enum.Material.Concrete)
@@ -47,12 +48,12 @@ function HongKong.build(folder: Folder)
         light.Parent = sign
     end
 
-    tower(-50, 50, Color3.fromRGB(255, 50, 100), "VERSALIFE")
-    tower(50, 50, Color3.fromRGB(50, 200, 255), "LUCKY MONEY")
-    tower(-50, -50, Color3.fromRGB(200, 100, 255), "QUEEN'S TOWER")
-    tower(50, -50, Color3.fromRGB(255, 200, 50), "TONG'S CLINIC")
+    tower(-50, 50, Color3.fromRGB(255, 50, 100), "HELIX TOWER")
+    tower(50, 50, Color3.fromRGB(50, 200, 255), "FREEPORT EXCHANGE")
+    tower(-50, -50, Color3.fromRGB(200, 100, 255), "ANCHOR HEIGHTS")
+    tower(50, -50, Color3.fromRGB(255, 200, 50), "CAEL'S CLINIC")
 
-    -- Hanging lanterns
+    -- Hanging street lanterns
     for z = -80, 80, 16 do
         local lantern = MapUtil.part(folder, {
             Size = Vector3.new(2, 3, 2),
@@ -67,32 +68,29 @@ function HongKong.build(folder: Folder)
         pl.Parent = lantern
     end
 
-    -- Versalife entrance (locked, hard difficulty)
+    -- Helix Tower entrance (locked, hard difficulty)
     MapUtil.door(folder, Vector3.new(-30, 5, 50), true, 3)
     MapUtil.terminal(folder, Vector3.new(-30, 4, 30), 3, "HackTerminal")
 
-    -- Tracer Tong's clinic (open). Tong's dialog is the player-choice
-    -- defection moment — see Dialog.lua TracerTong tree.
+    -- Cael's safehouse / clinic (open)
     MapUtil.door(folder, Vector3.new(30, 5, -50), false)
-    MapUtil.npc(folder, "Tracer Tong", Vector3.new(35, 3, -55), "TracerTong",
+    MapUtil.npc(folder, "Cael", Vector3.new(35, 3, -55), "Cael",
         Color3.fromRGB(80, 60, 40))
 
-    -- Hong Kong civilians.
+    -- Civilians
     MapUtil.civilian(folder, "Hawker", Vector3.new(40, 3, -30))
     MapUtil.civilian(folder, "Pedestrian", Vector3.new(0, 3, 60))
 
-    -- NSF armorer in Tracer Tong's clinic. Refuses UNATCO loyalists.
-    MapUtil.vendor(folder, "NSF Armorer", Vector3.new(40, 3, -45), "NSF_QM",
+    -- Awakened armorer (gated vendor; refuses AEGIS loyalists).
+    MapUtil.vendor(folder, "Awakened Armorer", Vector3.new(40, 3, -45), "Awakened_QM",
         Color3.fromRGB(80, 30, 30))
 
-    -- MJ12 commandos
+    -- Helix security on the corporate side of the street
     EnemyAI.run(EnemyAI.spawn(Vector3.new(-20, 4, 0), "AssaultRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(20, 4, 0), "AssaultRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(-30, 4, 70), "SniperRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(0, 4, -70), "AssaultRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(15, 4, -90), "Pistol10mm"))
-
-    -- Versalife security bots patrol the corporate side of the street.
     EnemyAI.run(EnemyAI.spawnSecurityBot(Vector3.new(-30, 4, 30)))
     EnemyAI.run(EnemyAI.spawnSpiderBot(Vector3.new(-25, 4, 50)))
 
@@ -110,12 +108,12 @@ function HongKong.build(folder: Folder)
     MapUtil.pickup(folder, "WeaponModReload", 1, Vector3.new(35, 2, -50), Color3.fromRGB(220, 180, 60))
     MapUtil.pickup(folder, "WeaponModScope", 1, Vector3.new(-35, 2, -50), Color3.fromRGB(50, 50, 60))
 
-    MapUtil.label(folder, "Hong Kong - Tonnochi Road", Vector3.new(0, 90, 0),
+    MapUtil.label(folder, "Pacific Anchor — Free-Port", Vector3.new(0, 90, 0),
         Color3.fromRGB(255, 100, 200))
 
-    -- Transition back to UNATCO HQ
-    MapUtil.transition(folder, "ToUNATCO", Vector3.new(0, 4, 115), Vector3.new(8, 8, 4), "UNATCO_HQ")
-    MapUtil.label(folder, "Helipad -> UNATCO HQ", Vector3.new(0, 9, 115))
+    -- Transition back to AEGIS Tower
+    MapUtil.transition(folder, "ToAegisTower", Vector3.new(0, 4, 115), Vector3.new(8, 8, 4), "AegisTower")
+    MapUtil.label(folder, "Helipad -> AEGIS Tower", Vector3.new(0, 9, 115))
 end
 
-return HongKong
+return PacificAnchor

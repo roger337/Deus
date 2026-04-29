@@ -1,26 +1,33 @@
 --!strict
--- Nano-augmentations. Each occupies one slot, has 4 levels, and may be active or passive.
--- Activating an aug drains bio-energy per second; level 1 is cheap, level 4 is expensive.
+-- Biomods (formerly "augmentations"). Each occupies one slot, has 4 levels,
+-- and may be active or passive. Activating a biomod drains bio-energy per
+-- second; level 1 is cheap, level 4 is expensive.
+--
+-- LORE: Biomods are reverse-engineered Helix tech. Their "side effect" is
+-- the ability to pierce the global perception filter Helix maintains over
+-- Earth — Cloak hides you from the filter, Targeting / "True Sight" tags
+-- humans whose sensorium has been adjusted, Cellular Reweave repairs the
+-- nervous-tissue damage caused by overriding the filter under stress.
 
 export type AugDef = {
     id: string,
     name: string,
-    slot: string,                -- "Cranial", "Eye", "Arms", "Legs", "Torso", "Subdermal"
-    active: boolean,             -- true = toggleable, false = passive
-    energyPerSec: number,        -- only if active
+    slot: string,
+    active: boolean,
+    energyPerSec: number,
     description: string,
-    levels: { string },          -- description per level (1..4)
-    magnitudes: { number },      -- numeric strength per level
+    levels: { string },
+    magnitudes: { number },
 }
 
 local Augs: { [string]: AugDef } = {
     CombatStrength = {
         id = "CombatStrength",
-        name = "Combat Strength",
+        name = "Myomer Boost",
         slot = "Arms",
         active = true,
         energyPerSec = 60,
-        description = "Increases damage of all melee attacks.",
+        description = "Synthetic muscle weave. Increases melee damage.",
         levels = {
             "Melee damage +50%",
             "Melee damage +100%",
@@ -31,7 +38,7 @@ local Augs: { [string]: AugDef } = {
     },
     MicrofibralMuscle = {
         id = "MicrofibralMuscle",
-        name = "Microfibral Muscle",
+        name = "Lift Frame",
         slot = "Arms",
         active = false,
         energyPerSec = 0,
@@ -46,7 +53,7 @@ local Augs: { [string]: AugDef } = {
     },
     SpeedEnhancement = {
         id = "SpeedEnhancement",
-        name = "Speed Enhancement",
+        name = "Reflex Tuner",
         slot = "Legs",
         active = true,
         energyPerSec = 80,
@@ -61,7 +68,7 @@ local Augs: { [string]: AugDef } = {
     },
     SilentRun = {
         id = "SilentRun",
-        name = "Run Silent",
+        name = "Acoustic Damping",
         slot = "Legs",
         active = true,
         energyPerSec = 40,
@@ -71,26 +78,26 @@ local Augs: { [string]: AugDef } = {
     },
     Cloak = {
         id = "Cloak",
-        name = "Cloak",
+        name = "Refraction Veil",
         slot = "Subdermal",
         active = true,
         energyPerSec = 200,
-        description = "Renders you invisible to humans.",
+        description = "Bends the perception filter; humans (including Helix-conditioned humans) cannot register your presence.",
         levels = {
-            "Cloak vs. humans (low quality)",
-            "Cloak vs. humans (med)",
-            "Cloak vs. humans (high)",
-            "Cloak vs. humans (perfect)",
+            "Veil quality: low",
+            "Veil quality: medium",
+            "Veil quality: high",
+            "Veil quality: perfect",
         },
         magnitudes = { 0.5, 0.3, 0.15, 0.0 },
     },
     Regeneration = {
         id = "Regeneration",
-        name = "Regeneration",
+        name = "Cellular Reweave",
         slot = "Torso",
         active = true,
         energyPerSec = 120,
-        description = "Drains bio-energy to restore health over time.",
+        description = "Repairs nervous-tissue damage caused by perception override; restores health over time.",
         levels = {
             "+1 HP/s",
             "+2 HP/s",
@@ -101,27 +108,32 @@ local Augs: { [string]: AugDef } = {
     },
     BallisticProtection = {
         id = "BallisticProtection",
-        name = "Ballistic Protection",
+        name = "Kevlar Weave",
         slot = "Subdermal",
         active = false,
         energyPerSec = 0,
-        description = "Reduces damage from bullets.",
+        description = "Subdermal mesh. Reduces incoming bullet damage.",
         levels = { "-15% bullet dmg", "-30%", "-45%", "-60%" },
         magnitudes = { 0.85, 0.70, 0.55, 0.40 },
     },
     Targeting = {
         id = "Targeting",
-        name = "Targeting",
+        name = "Smart-Sights / True Sight",
         slot = "Eye",
         active = true,
         energyPerSec = 30,
-        description = "Highlights targets and improves aim accuracy.",
-        levels = { "Tag enemies", "+ damage info", "+ weak spots", "+ predictive aim" },
-        magnitudes = { 0.9, 0.75, 0.6, 0.4 }, -- spread multiplier
+        description = "Tags humans whose sensorium has been Helix-adjusted; tightens weapon spread on tagged targets.",
+        levels = {
+            "Tag conditioned humans",
+            "+ damage telemetry",
+            "+ structural weak points",
+            "+ predictive aim",
+        },
+        magnitudes = { 0.9, 0.75, 0.6, 0.4 },
     },
     AggressiveDefense = {
         id = "AggressiveDefense",
-        name = "Aggressive Defense System",
+        name = "ICE Shield",
         slot = "Cranial",
         active = true,
         energyPerSec = 100,
@@ -131,13 +143,28 @@ local Augs: { [string]: AugDef } = {
     },
     EMPShield = {
         id = "EMPShield",
-        name = "EMP Shield",
+        name = "Faraday Mesh",
         slot = "Subdermal",
         active = false,
         energyPerSec = 0,
         description = "Reduces damage from electrical and EMP sources.",
         levels = { "-25%", "-50%", "-75%", "-100%" },
         magnitudes = { 0.75, 0.5, 0.25, 0.0 },
+    },
+    VeilBreaker = {
+        id = "VeilBreaker",
+        name = "Veil Breaker",
+        slot = "Cranial",
+        active = true,
+        energyPerSec = 160,
+        description = "Burns off the perception filter in a radius around you. Reveals which humans are Helix-conditioned and which are genuine. High energy cost.",
+        levels = {
+            "Reveal radius 12 studs",
+            "Reveal radius 24 studs",
+            "Reveal radius 48 studs",
+            "Reveal entire current map",
+        },
+        magnitudes = { 12, 24, 48, 9999 },
     },
 }
 

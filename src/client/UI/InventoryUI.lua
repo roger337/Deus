@@ -232,7 +232,7 @@ function InventoryUI.start()
             empty.TextColor3 = Theme.TextDim
             empty.TextWrapped = true
             empty.ZIndex = 6
-            empty.Text = "No compatible mods in inventory. Look for pickups in the field — Versalife, Area 51, and the warehouses tend to have them."
+            empty.Text = "No compatible mods in inventory. Look for pickups in the field — Pacific Anchor, Vault-7, and the warehouses tend to have them."
             empty.Parent = listFrame
         end
 

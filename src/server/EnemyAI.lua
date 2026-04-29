@@ -1,8 +1,8 @@
 --!strict
 -- Server-driven AI. Three kinds:
---   Human       - NSF grunt, ranged weapon, radio chatter (NSF:* voice keys)
---   SecurityBot - wheeled, slow turn, laser, EMP-vulnerable (Bot:* voice keys)
---   SpiderBot   - small, fast, melee zap (Spider:* + Bot:disabled voice keys)
+--   Human       - human grunt, ranged weapon, radio chatter (Hostile:* keys)
+--   SecurityBot - wheeled, slow turn, laser, EMP-vulnerable (Bot:* keys)
+--   SpiderBot   - small, fast, melee zap (Spider:* + Bot:disabled keys)
 --
 -- Spawn entrypoints:
 --   EnemyAI.spawn(positionVec3, weaponId)             -- legacy: human grunt
@@ -49,13 +49,13 @@ local KIND_CFG: { [string]: KindCfg } = {
         patrolSpeed = 8, chaseSpeed = 16,
         attackCooldown = ATTACK_COOLDOWN_HUMAN,
         bodyColor = Color3.fromRGB(60, 60, 90),
-        healthLabel = "NSF",
+        healthLabel = "HOSTILE",
         barks = {
-            spotted = "NSF:spotted",
-            lost = "NSF:lostTarget",
-            wounded = "NSF:wounded",
-            death = "NSF:death",
-            idle = { "NSF:idle1", "NSF:idle2", "NSF:idle3", "NSF:idle4" },
+            spotted = "Hostile:spotted",
+            lost = "Hostile:lostTarget",
+            wounded = "Hostile:wounded",
+            death = "Hostile:death",
+            idle = { "Hostile:idle1", "Hostile:idle2", "Hostile:idle3", "Hostile:idle4" },
             idleProb = 0.15,
         },
     },
@@ -290,8 +290,8 @@ end
 local function buildHuman(opts): Model
     local position: Vector3 = opts.position
     local model = Instance.new("Model")
-    model.Name = opts.name or "NSF_Grunt"
-    model:SetAttribute("Faction", "NSF")
+    model.Name = opts.name or "Hostile_Grunt"
+    model:SetAttribute("Faction", "Hostile")
     model:SetAttribute("Kind", "Human")
     model:SetAttribute("Stamina", 100)
     model:SetAttribute("Weapon", opts.weapon or "AssaultRifle")
@@ -338,7 +338,7 @@ local function buildSecurityBot(opts): Model
     local position: Vector3 = opts.position
     local model = Instance.new("Model")
     model.Name = opts.name or "SecurityBot"
-    model:SetAttribute("Faction", "NSF")
+    model:SetAttribute("Faction", "Hostile")
     model:SetAttribute("Kind", "SecurityBot")
 
     -- Wheeled base.
@@ -396,7 +396,7 @@ local function buildSpiderBot(opts): Model
     local position: Vector3 = opts.position
     local model = Instance.new("Model")
     model.Name = opts.name or "SpiderBot"
-    model:SetAttribute("Faction", "NSF")
+    model:SetAttribute("Faction", "Hostile")
     model:SetAttribute("Kind", "SpiderBot")
 
     local hrp = Instance.new("Part")

@@ -1,115 +1,144 @@
 --!strict
--- Voice line registry. Maps a stable string key to a Roblox audio asset ID + subtitle.
+-- Voice line registry. Maps a stable string key to a Roblox audio asset ID
+-- + subtitle.
 --
 -- HOW TO ADD A VOICE LINE:
 --   1. Upload your audio to Roblox (Studio -> Toolbox -> Audio -> "My Audio").
 --   2. Copy the resulting asset URL: rbxassetid://<NUMBER>
 --   3. Paste it into the `assetId` field below.
 --
--- You can also paste in any audio asset ID you legitimately own/are licensed to use.
--- Keys with `assetId == ""` will play no sound but still display the subtitle.
+-- Keys with `assetId == ""` play no sound but still display the subtitle.
+-- All audio you upload must be your own work or properly licensed.
 --
--- Subtitles are intentionally short (1 line). Long dialog text lives in Dialog.lua;
--- subtitles here are only shown for *bark*-style voice lines (enemy alerts, etc.)
--- where there is no dialog UI on screen. For dialog tree lines, the dialog text in
--- Dialog.lua is the subtitle, and assetId is looked up via key "Dialog:<tree>:<node>".
+-- For dialog-tree voice keys, the dialog text shown by DialogUI is the
+-- subtitle, so leave `subtitle` nil here.
 
 export type VoiceLine = {
-    assetId: string,        -- "" = silent fallback (subtitle only)
-    subtitle: string?,      -- nil = use the dialog node's text instead
-    duration: number,       -- seconds; subtitle stays this long
+    assetId: string,
+    subtitle: string?,
+    duration: number,
     volume: number?,
-    pitch: number?,         -- PlaybackSpeed; <1 lower, >1 higher (Anna ~0.92)
-    prefix: string?,        -- another VoiceLine key to play first (e.g. "Radio:crackle")
+    pitch: number?,
+    prefix: string?,
 }
 
 local VoiceLines: { [string]: VoiceLine } = {
 
     --[[ ============================================================
          DIALOG VOICES — keyed as "Dialog:<treeId>:<nodeId>"
-         These play when DialogService shows the matching node.
-         Subtitle is taken from the dialog text, so leave nil here.
          ============================================================ ]]
 
-    -- Paul Denton: low, calm. pitch 0.95.
-    ["Dialog:PaulDenton:intro"]        = { assetId = "", duration = 8, pitch = 0.95 },
-    ["Dialog:PaulDenton:where"]        = { assetId = "", duration = 5, pitch = 0.95 },
-    ["Dialog:PaulDenton:who"]          = { assetId = "", duration = 5, pitch = 0.95 },
-    ["Dialog:PaulDenton:accept"]       = { assetId = "", duration = 2, pitch = 0.95 },
+    -- Marcus Hale: tired middle-management. Pitch 0.95.
+    ["Dialog:MarcusHale:intro_default"]   = { assetId = "", duration = 9, pitch = 0.95 },
+    ["Dialog:MarcusHale:intro_pacifist"]  = { assetId = "", duration = 5, pitch = 0.95 },
+    ["Dialog:MarcusHale:intro_civkiller"] = { assetId = "", duration = 5, pitch = 0.95 },
+    ["Dialog:MarcusHale:intro_vega_killed"] = { assetId = "", duration = 5, pitch = 0.95 },
+    ["Dialog:MarcusHale:intro_vega_spared"] = { assetId = "", duration = 5, pitch = 0.95 },
+    ["Dialog:MarcusHale:intro_defected"]  = { assetId = "", duration = 5, pitch = 0.95 },
+    ["Dialog:MarcusHale:where"]           = { assetId = "", duration = 5, pitch = 0.95 },
+    ["Dialog:MarcusHale:who"]             = { assetId = "", duration = 5, pitch = 0.95 },
+    ["Dialog:MarcusHale:what"]            = { assetId = "", duration = 5, pitch = 0.95 },
+    ["Dialog:MarcusHale:accept"]          = { assetId = "", duration = 2, pitch = 0.95 },
 
-    -- Dr. Reyes: neutral, warm. pitch 1.05.
-    ["Dialog:JaimeReyes:intro"]        = { assetId = "", duration = 8, pitch = 1.05 },
-    ["Dialog:JaimeReyes:supplies"]     = { assetId = "", duration = 2, pitch = 1.05 },
-    ["Dialog:JaimeReyes:extras"]       = { assetId = "", duration = 4, pitch = 1.05 },
+    -- Dr. Halberg: warm. Pitch 1.05.
+    ["Dialog:InesHalberg:intro"]              = { assetId = "", duration = 8, pitch = 1.05 },
+    ["Dialog:InesHalberg:lore"]               = { assetId = "", duration = 6, pitch = 1.05 },
+    ["Dialog:InesHalberg:lore_theories"]      = { assetId = "", duration = 6, pitch = 1.05 },
+    ["Dialog:InesHalberg:intro_cloak"]        = { assetId = "", duration = 6, pitch = 1.05 },
+    ["Dialog:InesHalberg:intro_truesight"]    = { assetId = "", duration = 6, pitch = 1.05 },
+    ["Dialog:InesHalberg:intro_regen"]        = { assetId = "", duration = 6, pitch = 1.05 },
+    ["Dialog:InesHalberg:intro_strength"]     = { assetId = "", duration = 4, pitch = 1.05 },
+    ["Dialog:InesHalberg:intro_armor"]        = { assetId = "", duration = 4, pitch = 1.05 },
+    ["Dialog:InesHalberg:supplies"]           = { assetId = "", duration = 2, pitch = 1.05 },
+    ["Dialog:InesHalberg:extras"]             = { assetId = "", duration = 4, pitch = 1.05 },
 
-    -- Anna Navarre: nano-aug throat, faintly robotic. pitch 0.92.
-    ["Dialog:AnnaNavarre:intro"]       = { assetId = "", duration = 6, pitch = 0.92 },
-    ["Dialog:AnnaNavarre:argue"]       = { assetId = "", duration = 4, pitch = 0.92 },
-    ["Dialog:AnnaNavarre:leave"]       = { assetId = "", duration = 1, pitch = 0.92 },
+    -- Vega: faintly synthetic from heavy biomod use. Pitch 0.92.
+    ["Dialog:Vega:intro"]            = { assetId = "", duration = 6, pitch = 0.92 },
+    ["Dialog:Vega:argue"]            = { assetId = "", duration = 4, pitch = 0.92 },
+    ["Dialog:Vega:confront"]         = { assetId = "", duration = 4, pitch = 0.92 },
+    ["Dialog:Vega:hostile"]          = { assetId = "", duration = 2, pitch = 0.92 },
+    ["Dialog:Vega:spared"]           = { assetId = "", duration = 2, pitch = 0.92 },
+    ["Dialog:Vega:leave"]            = { assetId = "", duration = 1, pitch = 0.92 },
+    ["Dialog:Vega:intro_strength"]   = { assetId = "", duration = 4, pitch = 0.92 },
+    ["Dialog:Vega:intro_cloak"]      = { assetId = "", duration = 4, pitch = 0.92 },
+    ["Dialog:Vega:post_killed"]      = { assetId = "", duration = 2 },
+    ["Dialog:Vega:post_spared"]      = { assetId = "", duration = 4, pitch = 0.92 },
+
+    -- Director Cole: too smooth. Pitch 0.88, slightly off-tempo cadence.
+    ["Dialog:DirectorCole:intro"]         = { assetId = "", duration = 8, pitch = 0.88 },
+    ["Dialog:DirectorCole:offer"]         = { assetId = "", duration = 8, pitch = 0.88 },
+    ["Dialog:DirectorCole:refuse"]        = { assetId = "", duration = 4, pitch = 0.88 },
+    ["Dialog:DirectorCole:intro_again"]   = { assetId = "", duration = 3, pitch = 0.88 },
+    ["Dialog:DirectorCole:post_join"]     = { assetId = "", duration = 4, pitch = 0.88 },
+
+    -- Cael: sharp, urgent. Pitch 1.0.
+    ["Dialog:Cael:intro"]            = { assetId = "", duration = 9 },
+    ["Dialog:Cael:stall"]            = { assetId = "", duration = 3 },
+    ["Dialog:Cael:defect_open"]      = { assetId = "", duration = 5 },
+    ["Dialog:Cael:loyal"]            = { assetId = "", duration = 3 },
+    ["Dialog:Cael:intro_again"]      = { assetId = "", duration = 2 },
+    ["Dialog:Cael:intro_defected"]   = { assetId = "", duration = 8 },
+    ["Dialog:Cael:intro_targeting"]  = { assetId = "", duration = 6 },
 
     --[[ ============================================================
-         ENEMY BARKS — short combat callouts.
-         Subtitle is shown briefly if the player is nearby and audio
-         is missing/silent.
+         HOSTILE BARKS — short combat callouts.
          ============================================================ ]]
 
-    -- All NSF combat barks come over the radio: prefix with a brief crackle.
-    ["NSF:spotted"]    = { assetId = "", subtitle = "[NSF] Hostile! Take him down!",      duration = 2.5, prefix = "Radio:crackle" },
-    ["NSF:investigate"]= { assetId = "", subtitle = "[NSF] Did you hear that?",           duration = 2.5, prefix = "Radio:crackle" },
-    ["NSF:lostTarget"] = { assetId = "", subtitle = "[NSF] Where'd he go?",               duration = 2.5, prefix = "Radio:crackle" },
-    ["NSF:reload"]     = { assetId = "", subtitle = "[NSF] Reloading!",                   duration = 1.5 },
-    ["NSF:wounded"]    = { assetId = "", subtitle = "[NSF] I'm hit!",                     duration = 1.5 },
-    ["NSF:death"]      = { assetId = "", subtitle = "",                                   duration = 1.5 },
-    ["NSF:knockedOut"] = { assetId = "", subtitle = "",                                   duration = 1.5 },
+    -- All hostile combat barks come over a radio: prefix with brief crackle.
+    ["Hostile:spotted"]    = { assetId = "", subtitle = "[HOSTILE] Contact! Engage!",        duration = 2.5, prefix = "Radio:crackle" },
+    ["Hostile:investigate"]= { assetId = "", subtitle = "[HOSTILE] Did you hear that?",       duration = 2.5, prefix = "Radio:crackle" },
+    ["Hostile:lostTarget"] = { assetId = "", subtitle = "[HOSTILE] Where'd they go?",         duration = 2.5, prefix = "Radio:crackle" },
+    ["Hostile:reload"]     = { assetId = "", subtitle = "[HOSTILE] Reloading!",               duration = 1.5 },
+    ["Hostile:wounded"]    = { assetId = "", subtitle = "[HOSTILE] I'm hit!",                 duration = 1.5 },
+    ["Hostile:death"]      = { assetId = "", subtitle = "",                                    duration = 1.5 },
+    ["Hostile:knockedOut"] = { assetId = "", subtitle = "",                                    duration = 1.5 },
 
-    -- Idle patrol chatter. Picked at random by EnemyAI patrol step.
-    ["NSF:idle1"]      = { assetId = "", subtitle = "[NSF] All quiet on this side.",     duration = 2.5, prefix = "Radio:crackle" },
-    ["NSF:idle2"]      = { assetId = "", subtitle = "[NSF] Anything on your end?",       duration = 2.5, prefix = "Radio:crackle" },
-    ["NSF:idle3"]      = { assetId = "", subtitle = "[NSF] Stay sharp, Denton's coming.", duration = 2.5, prefix = "Radio:crackle" },
-    ["NSF:idle4"]      = { assetId = "", subtitle = "[NSF] Copy. Holding position.",     duration = 2.5, prefix = "Radio:crackle" },
+    -- Idle patrol chatter.
+    ["Hostile:idle1"]      = { assetId = "", subtitle = "[HOSTILE] All quiet on this side.",  duration = 2.5, prefix = "Radio:crackle" },
+    ["Hostile:idle2"]      = { assetId = "", subtitle = "[HOSTILE] Anything on your end?",    duration = 2.5, prefix = "Radio:crackle" },
+    ["Hostile:idle3"]      = { assetId = "", subtitle = "[HOSTILE] Stay sharp.",              duration = 2.5, prefix = "Radio:crackle" },
+    ["Hostile:idle4"]      = { assetId = "", subtitle = "[HOSTILE] Copy. Holding position.",  duration = 2.5, prefix = "Radio:crackle" },
 
-    -- Radio chatter pre-cue (very short crackle, plays before NSF lines).
-    ["Radio:crackle"]  = { assetId = "", subtitle = "",                                   duration = 0.4, volume = 0.5 },
+    -- Radio chatter pre-cue (very short crackle).
+    ["Radio:crackle"]      = { assetId = "", subtitle = "",                                    duration = 0.4, volume = 0.5 },
 
     --[[ ============================================================
-         AUTONOMOUS BOTS — security bot scans, spider bot warbles.
-         Bots have a robotic pitch (0.7-0.85) and no radio prefix.
+         AUTONOMOUS BOTS
          ============================================================ ]]
 
-    ["Bot:scan"]       = { assetId = "", subtitle = "",                                   duration = 1.5, pitch = 0.7 },
-    ["Bot:alert"]      = { assetId = "", subtitle = "[BOT] HOSTILE DETECTED.",            duration = 2,   pitch = 0.7 },
-    ["Bot:firing"]     = { assetId = "", subtitle = "",                                   duration = 0.4, pitch = 0.7 },
-    ["Bot:lost"]       = { assetId = "", subtitle = "[BOT] TARGET LOST. RESUMING PATROL.", duration = 2.5, pitch = 0.7 },
-    ["Bot:disabled"]   = { assetId = "", subtitle = "[BOT] CRITICAL FAILURE.",            duration = 1.5, pitch = 0.7 },
-    ["Bot:emp"]        = { assetId = "", subtitle = "",                                   duration = 0.5, pitch = 0.6 },
-
-    ["Spider:warble"]  = { assetId = "", subtitle = "",                                   duration = 1.0, pitch = 1.4 },
-    ["Spider:strike"]  = { assetId = "", subtitle = "",                                   duration = 0.5, pitch = 1.4 },
+    ["Bot:scan"]           = { assetId = "", subtitle = "",                                    duration = 1.5, pitch = 0.7 },
+    ["Bot:alert"]          = { assetId = "", subtitle = "[BOT] HOSTILE DETECTED.",             duration = 2,   pitch = 0.7 },
+    ["Bot:firing"]         = { assetId = "", subtitle = "",                                    duration = 0.4, pitch = 0.7 },
+    ["Bot:lost"]           = { assetId = "", subtitle = "[BOT] TARGET LOST. RESUMING PATROL.", duration = 2.5, pitch = 0.7 },
+    ["Bot:disabled"]       = { assetId = "", subtitle = "[BOT] CRITICAL FAILURE.",             duration = 1.5, pitch = 0.7 },
+    ["Bot:emp"]            = { assetId = "", subtitle = "",                                    duration = 0.5, pitch = 0.6 },
+    ["Spider:warble"]      = { assetId = "", subtitle = "",                                    duration = 1.0, pitch = 1.4 },
+    ["Spider:strike"]      = { assetId = "", subtitle = "",                                    duration = 0.5, pitch = 1.4 },
 
     --[[ ============================================================
-         MISSION / SYSTEM CUES — global, non-positional.
+         MISSION / SYSTEM CUES
          ============================================================ ]]
 
-    ["Mission:objectiveAdded"]    = { assetId = "", subtitle = "Objective added.",        duration = 2 },
-    ["Mission:objectiveComplete"] = { assetId = "", subtitle = "Objective complete.",     duration = 2 },
-    ["Mission:augInstalled"]      = { assetId = "", subtitle = "Augmentation installed.", duration = 2 },
-    ["Mission:hackSuccess"]       = { assetId = "", subtitle = "Access granted.",         duration = 2 },
-    ["Mission:hackFail"]          = { assetId = "", subtitle = "Access denied.",          duration = 2 },
-    ["Mission:lockpickSuccess"]   = { assetId = "", subtitle = "",                        duration = 1 },
+    ["Mission:objectiveAdded"]    = { assetId = "", subtitle = "Objective added.",         duration = 2 },
+    ["Mission:objectiveComplete"] = { assetId = "", subtitle = "Objective complete.",      duration = 2 },
+    ["Mission:augInstalled"]      = { assetId = "", subtitle = "Biomod installed.",        duration = 2 },
+    ["Mission:hackSuccess"]       = { assetId = "", subtitle = "Access granted.",          duration = 2 },
+    ["Mission:hackFail"]          = { assetId = "", subtitle = "Access denied.",           duration = 2 },
+    ["Mission:lockpickSuccess"]   = { assetId = "", subtitle = "",                          duration = 1 },
 
     -- Endings (each plays as the epilogue UI fades in).
-    ["Ending:Helios"]      = { assetId = "", subtitle = "",                                duration = 6, pitch = 1.0 },
-    ["Ending:Illuminati"]  = { assetId = "", subtitle = "",                                duration = 6, pitch = 0.95 },
-    ["Ending:DarkAge"]     = { assetId = "", subtitle = "",                                duration = 6, pitch = 0.85 },
+    ["Ending:Lattice"]            = { assetId = "", subtitle = "",                          duration = 6, pitch = 1.0 },
+    ["Ending:Quorum"]             = { assetId = "", subtitle = "",                          duration = 6, pitch = 0.95 },
+    ["Ending:Reset"]              = { assetId = "", subtitle = "",                          duration = 6, pitch = 0.85 },
+    ["Ending:HelixAscension"]     = { assetId = "", subtitle = "",                          duration = 6, pitch = 0.7 },
 
     --[[ ============================================================
-         JC DENTON BARKS — when the player takes damage, picks up
-         items, etc. (Optional, but DX-flavored.)
+         OPERATIVE BARKS — when the player takes damage etc.
          ============================================================ ]]
 
-    ["JC:hurt"]        = { assetId = "", subtitle = "",                                   duration = 1.0 },
-    ["JC:lowHealth"]   = { assetId = "", subtitle = "[JC] I'm losing blood.",             duration = 2 },
-    ["JC:itemPicked"]  = { assetId = "", subtitle = "",                                   duration = 0.6 },
+    ["Operative:hurt"]       = { assetId = "", subtitle = "",                                duration = 1.0 },
+    ["Operative:lowHealth"]  = { assetId = "", subtitle = "[OP] I'm losing blood.",          duration = 2 },
+    ["Operative:itemPicked"] = { assetId = "", subtitle = "",                                duration = 0.6 },
 }
 
 return VoiceLines

@@ -25,7 +25,7 @@ local function clearWorld()
     end
     -- Despawn lingering enemies (they live directly in Workspace).
     for _, child in ipairs(Workspace:GetChildren()) do
-        if child:IsA("Model") and child:GetAttribute("Faction") == "NSF" then
+        if child:IsA("Model") and child:GetAttribute("Faction") == "Hostile" then
             child:Destroy()
         end
     end
@@ -62,14 +62,14 @@ end
 -- based on prior behavior. This is where "objectives change based on prior
 -- choices" hooks in.
 function LevelManager.applyArrivalObjectives(player: Player, mapId: string)
-    if mapId == "HongKong" then
+    if mapId == "PacificAnchor" then
         local state = WorldState.get(player)
         local pacifist = (state.counters.civiliansKilled or 0) == 0
             and (state.counters.kills or 0) <= 5
-        local objectiveId = pacifist and "HongKong_Stealth" or "HongKong_Assault"
-        if not state.flags["startedHongKong"] then
+        local objectiveId = pacifist and "AnchorStealth" or "AnchorAssault"
+        if not state.flags["startedAnchor"] then
             MissionService.start(player, objectiveId)
-            WorldState.setFlag(player, "startedHongKong", true)
+            WorldState.setFlag(player, "startedAnchor", true)
         end
     end
 end
@@ -82,12 +82,13 @@ function LevelManager.placePlayer(player: Player)
     hrp.CFrame = CFrame.new(def.spawnPoint + Vector3.new(0, 4, 0))
 end
 
--- Per-transition gate predicate, keyed by "<sourceMap>->" + targetMap.
+-- Per-transition gate predicate, keyed by target map id.
 -- Returning false denies the transition and shows a notify.
 local function gateFor(targetMap: string): (string?, string?)
-    -- Once defected, JC cannot return through the front door of UNATCO HQ.
-    if targetMap == "UNATCO_HQ" then
-        return "!flag:defected", "UNATCO has flagged you as a defector. Find another way."
+    -- Once defected, the operative cannot return through the front door of
+    -- AEGIS Tower.
+    if targetMap == "AegisTower" then
+        return "!flag:defected", "AEGIS has flagged you as a defector. Find another way."
     end
     return nil, nil
 end

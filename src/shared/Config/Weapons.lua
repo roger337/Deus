@@ -1,5 +1,6 @@
 --!strict
--- Weapon definitions, modeled after Deus Ex's arsenal.
+-- Weapon definitions. Damage scales with the player's relevant skill rank
+-- (see Skills.lua) and any installed mods (see WeaponMods.lua).
 -- Damage scales with the player's relevant skill rank (see Skills.lua).
 
 export type WeaponDef = {
@@ -24,7 +25,7 @@ local Weapons: { [string]: WeaponDef } = {
     Combat10mm = {
         id = "Combat10mm",
         name = "Combat Knife",
-        skill = "LowTech",
+        skill = "Melee",
         slot = "Melee",
         damage = 18,
         range = 6,
@@ -36,11 +37,11 @@ local Weapons: { [string]: WeaponDef } = {
         automatic = false,
         headshotMult = 1.5,
         silenced = true,
-        description = "Standard issue combat knife. Quiet and reliable.",
+        description = "Carbon-blade combat knife. Quiet and reliable.",
     },
     Pistol10mm = {
         id = "Pistol10mm",
-        name = "10mm Pistol",
+        name = "9mm Sidearm",
         skill = "Pistol",
         slot = "Pistol",
         damage = 14,
@@ -53,11 +54,11 @@ local Weapons: { [string]: WeaponDef } = {
         automatic = false,
         headshotMult = 2.0,
         silenced = false,
-        description = "Compact 10mm sidearm. UNATCO standard issue.",
+        description = "Compact AEGIS-issue sidearm. Reliable, unremarkable.",
     },
     MiniCrossbow = {
         id = "MiniCrossbow",
-        name = "Mini-Crossbow",
+        name = "Tranq Crossbow",
         skill = "Pistol",
         slot = "Pistol",
         damage = 22,
@@ -70,7 +71,7 @@ local Weapons: { [string]: WeaponDef } = {
         automatic = false,
         headshotMult = 3.0,
         silenced = true,
-        description = "Silent tranquilizer crossbow. Ideal for stealth.",
+        description = "Compressed-air tranquilizer crossbow. Silent. Non-lethal.",
     },
     AssaultRifle = {
         id = "AssaultRifle",
@@ -87,11 +88,11 @@ local Weapons: { [string]: WeaponDef } = {
         automatic = true,
         headshotMult = 1.8,
         silenced = false,
-        description = "NSF favorite. High rate of fire, low accuracy at range.",
+        description = "Standard service rifle. High rate of fire, low accuracy at range.",
     },
     SniperRifle = {
         id = "SniperRifle",
-        name = "Sniper Rifle",
+        name = "Marksman Rifle",
         skill = "Rifle",
         slot = "Rifle",
         damage = 90,
@@ -104,11 +105,11 @@ local Weapons: { [string]: WeaponDef } = {
         automatic = false,
         headshotMult = 3.0,
         silenced = false,
-        description = "Bolt-action precision rifle. One shot, one kill.",
+        description = "Bolt-action precision rifle. Built for distance.",
     },
     GepGun = {
         id = "GepGun",
-        name = "GEP Gun",
+        name = "Thermite Launcher",
         skill = "Heavy",
         slot = "Heavy",
         damage = 180,
@@ -121,12 +122,12 @@ local Weapons: { [string]: WeaponDef } = {
         automatic = false,
         headshotMult = 1.0,
         silenced = false,
-        description = "Guided Explosive Projectile launcher. Anti-armor.",
+        description = "Shoulder-fired thermite charge launcher. Anti-armor / anti-construct.",
     },
     RiotProd = {
         id = "RiotProd",
-        name = "Riot Prod",
-        skill = "LowTech",
+        name = "Stun Baton",
+        skill = "Melee",
         slot = "Melee",
         damage = 12,
         range = 5,
@@ -138,11 +139,11 @@ local Weapons: { [string]: WeaponDef } = {
         automatic = false,
         headshotMult = 1.0,
         silenced = true,
-        description = "Non-lethal stun baton. Drains target energy on hit.",
+        description = "Non-lethal capacitor baton. Drains target energy on hit.",
     },
     StealthPistol = {
         id = "StealthPistol",
-        name = "Stealth Pistol",
+        name = "Whisper Sidearm",
         skill = "Pistol",
         slot = "Pistol",
         damage = 10,
@@ -155,7 +156,7 @@ local Weapons: { [string]: WeaponDef } = {
         automatic = false,
         headshotMult = 2.0,
         silenced = true,
-        description = "Suppressed 10mm. Lower damage but inaudible at range.",
+        description = "Integrally suppressed sidearm. Lower damage but inaudible at range.",
     },
     PlasmaRifle = {
         id = "PlasmaRifle",
@@ -176,7 +177,7 @@ local Weapons: { [string]: WeaponDef } = {
     },
     LAM = {
         id = "LAM",
-        name = "LAM",
+        name = "Sticky Charge",
         skill = "Heavy",
         slot = "Demolition",
         damage = 200,
@@ -189,12 +190,12 @@ local Weapons: { [string]: WeaponDef } = {
         automatic = false,
         headshotMult = 1.0,
         silenced = false,
-        description = "Lightweight Attack Munition. Throwable explosive; AoE damage.",
+        description = "Throwable adhesive explosive. Detonates on impact; area damage.",
     },
     ThrowingKnife = {
         id = "ThrowingKnife",
-        name = "Throwing Knife",
-        skill = "LowTech",
+        name = "Throwing Blade",
+        skill = "Melee",
         slot = "Melee",
         damage = 25,
         range = 60,
@@ -206,7 +207,7 @@ local Weapons: { [string]: WeaponDef } = {
         automatic = false,
         headshotMult = 2.5,
         silenced = true,
-        description = "Silent ranged melee. Each throw consumes one knife.",
+        description = "Silent ranged melee. Each throw consumes one blade.",
     },
 }
 

@@ -16,8 +16,8 @@ local DialogService = {}
 
 local active: { [Player]: { tree: string, node: string } } = {}
 
--- Hook called by other systems (e.g. Anna confrontation) to mutate the world.
--- Allows "hostile:Anna" effect to flip an NPC to combat. The map module
+-- Hook called by other systems (e.g. Vega confrontation) to mutate the world.
+-- Allows "hostile:Vega" effect to flip an NPC to combat. The map module
 -- registers handlers via DialogService.registerEffect.
 local effectHandlers: { [string]: (Player) -> () } = {}
 

@@ -113,7 +113,7 @@ function HUD.start()
     factionLbl.Font = Theme.Font
     factionLbl.TextSize = 14
     factionLbl.TextColor3 = Theme.Text
-    factionLbl.Text = "[FACTION] UNATCO"
+    factionLbl.Text = "[FACTION] AEGIS"
     factionLbl.Parent = factionChip
 
     local civWarn = Instance.new("TextLabel")
@@ -131,18 +131,20 @@ function HUD.start()
     wsEv.OnClientEvent:Connect(function(payload: any)
         if payload.faction then
             factionLbl.Text = string.format("[FACTION] %s", payload.faction)
-            if payload.faction == "NSF" then
+            if payload.faction == "IronPromise" then
                 factionLbl.TextColor3 = Color3.fromRGB(220, 100, 100)
-            elseif payload.faction == "UNATCO" then
+            elseif payload.faction == "AEGIS" then
                 factionLbl.TextColor3 = Color3.fromRGB(180, 220, 255)
+            elseif payload.faction == "Helix" then
+                factionLbl.TextColor3 = Color3.fromRGB(220, 60, 60)
             else
                 factionLbl.TextColor3 = Theme.TextDim
             end
         end
         if payload.counters and payload.flags then
             local civ = payload.counters.civiliansKilled or 0
-            if payload.flags.heliosLocked then
-                civWarn.Text = string.format("Helios merge locked (civilians: %d)", civ)
+            if payload.flags.latticeLocked then
+                civWarn.Text = string.format("Lattice Symbiosis locked (civilians: %d)", civ)
             elseif civ > 0 then
                 civWarn.Text = string.format("Civilians killed: %d / 3", civ)
             else

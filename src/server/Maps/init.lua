@@ -2,11 +2,11 @@
 -- Registry of all map modules.
 
 local Maps = {
-    LibertyIsland = require(script.LibertyIsland),
-    UNATCO_HQ = require(script.UnatcoHQ),
-    HellsKitchen = require(script.HellsKitchen),
-    HongKong = require(script.HongKong),
-    Area51 = require(script.Area51),
+    Bayfront      = require(script.Bayfront),
+    AegisTower    = require(script.AegisTower),
+    Hardline      = require(script.HardlineDistrict),
+    PacificAnchor = require(script.PacificAnchor),
+    Vault7        = require(script.Vault7),
 }
 
 return Maps

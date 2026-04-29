@@ -35,17 +35,17 @@ VendorService.init()
 SaveSlotService.init()
 
 -- =========================================================================
--- Dialog effect handlers. Declarative effects in Dialog.lua (`hostile:Anna`)
+-- Dialog effect handlers. Declarative effects in Dialog.lua (`hostile:Vega`)
 -- are dispatched to these handlers. Keep handlers small + idempotent.
 -- =========================================================================
 
-DialogService.registerEffect("hostile:Anna", function(player: Player)
-    -- Find the friendly Anna NPC, capture position, replace with a hostile
-    -- NSF-class enemy at the same spot. CharacterId persists so kill tracking
-    -- still flags WorldState.killedAnna correctly.
+DialogService.registerEffect("hostile:Vega", function(player: Player)
+    -- Find the friendly Vega NPC, capture position, replace with a hostile
+    -- enemy at the same spot. CharacterId persists so kill tracking still
+    -- flags WorldState.killedVega correctly.
     for _, child in ipairs(Workspace:GetDescendants()) do
-        if child:IsA("Model") and child:GetAttribute("CharacterId") == "Anna"
-           and child:GetAttribute("Faction") ~= "NSF" then
+        if child:IsA("Model") and child:GetAttribute("CharacterId") == "Vega"
+           and child:GetAttribute("Faction") ~= "Hostile" then
             local hrp = child:FindFirstChild("HumanoidRootPart") :: BasePart?
             if not hrp then return end
             local pos = hrp.Position
@@ -54,13 +54,13 @@ DialogService.registerEffect("hostile:Anna", function(player: Player)
                 position = pos,
                 kind = "Human",
                 weapon = "SniperRifle",
-                name = "Anna Navarre",
+                name = "Vega",
                 health = 200,
             })
-            hostile:SetAttribute("CharacterId", "Anna")
+            hostile:SetAttribute("CharacterId", "Vega")
             EnemyAI.run(hostile)
             local notify = Remotes.get("Notify") :: RemoteEvent
-            notify:FireClient(player, "Anna Navarre is now hostile.")
+            notify:FireClient(player, "Vega is now hostile.")
             return
         end
     end
@@ -142,4 +142,4 @@ end)
 LevelManager.init()
 SaveSlotService.bindAutoSave(120)
 
-print("[DeusEx] Server ready. Map:", LevelManager.currentMap())
+print("[AegisVeil] Server ready. Map:", LevelManager.currentMap())

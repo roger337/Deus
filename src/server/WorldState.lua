@@ -1,7 +1,7 @@
 --!strict
 -- Per-player narrative state. Distinct from PlayerData (which tracks gameplay
 -- stats: HP, inventory, skills) — WorldState tracks the *story*: faction
--- alignment, reputations, named flags ("defected", "killedAnna"), counters
+-- alignment, reputations, named flags ("defected", "killedVega"), counters
 -- ("civiliansKilled", "botsDisabled"). All branching dialog, mission gating,
 -- and ending eligibility reads from this single source.
 
@@ -11,12 +11,12 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 
 local Remotes = require(Shared.Remotes)
 
-export type Faction = "UNATCO" | "NSF" | "MJ12" | "Lone"
+export type Faction = "AEGIS" | "IronPromise" | "Helix" | "Lone"
 
 export type WorldState = {
     userId: number,
     faction: Faction,
-    reputation: { [string]: number },   -- UNATCO, NSF, Illuminati, MJ12, Civilian
+    reputation: { [string]: number },   -- AEGIS, IronPromise, Helix, Quorum, Civilian
     flags: { [string]: boolean },
     counters: { [string]: number },
 }
@@ -26,28 +26,28 @@ local cache: { [number]: WorldState } = {}
 local function defaults(userId: number): WorldState
     return {
         userId = userId,
-        faction = "UNATCO",
+        faction = "AEGIS",
         reputation = {
-            UNATCO = 50,
-            NSF = -50,
-            Illuminati = 0,
-            MJ12 = -25,
+            AEGIS = 50,
+            IronPromise = -50,
+            Quorum = 0,
+            Helix = -25,
             Civilian = 25,
         },
         flags = {
             defected = false,
-            joinedMJ12 = false,
-            metTracerTong = false,
-            metWaltonSimons = false,
-            killedAnna = false,
-            sparedAnna = false,
-            killedSimons = false,
-            recoveredAllAmbrosia = false,
-            chosenHelios = false,
-            chosenIlluminati = false,
-            chosenDarkAge = false,
-            chosenMJ12Enforce = false,
-            heliosLocked = false,
+            joinedHelix = false,
+            metCael = false,
+            metDirectorCole = false,
+            killedVega = false,
+            sparedVega = false,
+            killedCole = false,
+            recoveredAllStrain = false,
+            chosenLattice = false,
+            chosenQuorum = false,
+            chosenReset = false,
+            chosenHelixAscension = false,
+            latticeLocked = false,
         },
         counters = {
             kills = 0,
@@ -85,9 +85,9 @@ end
 function module.bumpCounter(player: Player, name: string, delta: number?)
     local state = module.get(player)
     state.counters[name] = (state.counters[name] or 0) + (delta or 1)
-    -- Civilian harm gates the Helios ending.
+    -- Civilian harm gates the Lattice Symbiosis ending.
     if name == "civiliansKilled" and state.counters[name] >= 3 then
-        state.flags.heliosLocked = true
+        state.flags.latticeLocked = true
     end
     module.replicate(player)
 end

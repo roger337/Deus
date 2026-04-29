@@ -1,28 +1,29 @@
 --!strict
--- Final mission: Area 51. Underground Majestic-12 facility, Helios server room.
--- Heavy security; the ending choice (Helios merge / Illuminati / Dark Age) lives here.
+-- Final mission: Vault-7. Underground Helix custodial site beneath the
+-- Sierras. Houses the Lattice core — the AI that maintains Earth's
+-- perception filter. The four endgame consoles live in the deepest chamber.
 
 local MapUtil = require(script.Parent.MapUtil)
 local EnemyAI = require(script.Parent.Parent.EnemyAI)
 
-local Area51 = {}
+local Vault7 = {}
 
-Area51.id = "Area51"
-Area51.displayName = "Area 51 - Sector 4"
-Area51.spawnPoint = Vector3.new(0, 4, 100)
+Vault7.id = "Vault7"
+Vault7.displayName = "Vault-7 (Sierras)"
+Vault7.spawnPoint = Vector3.new(0, 4, 100)
 
-function Area51.build(folder: Folder)
+function Vault7.build(folder: Folder)
     -- Sand outdoor zone
     MapUtil.floor(folder, Vector3.new(0, 1, 60), Vector3.new(160, 1, 100),
         Color3.fromRGB(160, 130, 80))
-    MapUtil.spawn(folder, "JCSpawn_Area51", Area51.spawnPoint, Color3.fromRGB(200, 50, 50))
+    MapUtil.spawn(folder, "OperativeSpawn_Vault7", Vault7.spawnPoint, Color3.fromRGB(200, 50, 50))
 
     -- Outer fence
     for x = -80, 80, 16 do
         MapUtil.box(folder, Vector3.new(x, 8, 110), Vector3.new(0.5, 16, 0.5),
             Color3.fromRGB(180, 180, 180), Enum.Material.Metal)
     end
-    -- "TOP SECRET" hangar
+    -- "RESTRICTED" hangar
     MapUtil.box(folder, Vector3.new(0, 20, 30), Vector3.new(120, 40, 60),
         Color3.fromRGB(80, 80, 90), Enum.Material.Metal)
     local sign = MapUtil.part(folder, {
@@ -36,7 +37,7 @@ function Area51.build(folder: Folder)
     local lbl = Instance.new("TextLabel")
     lbl.BackgroundTransparency = 1
     lbl.Size = UDim2.new(1, 0, 1, 0)
-    lbl.Text = "AREA 51 - SECTOR 4 - AUTHORIZED PERSONNEL ONLY"
+    lbl.Text = "VAULT-7  |  CUSTODIAL SITE  |  RESTRICTED"
     lbl.Font = Enum.Font.RobotoMono
     lbl.TextColor3 = Color3.fromRGB(255, 80, 80)
     lbl.TextScaled = true
@@ -54,36 +55,37 @@ function Area51.build(folder: Folder)
     MapUtil.wall(folder, Vector3.new(0, -4, -10), Vector3.new(80, 12, 1))
     MapUtil.floor(folder, Vector3.new(0, 2, -50), Vector3.new(80, 1, 80))
 
-    -- Stairs down (simple ramp)
-    local ramp = MapUtil.part(folder, {
+    -- Stairs down (ramp)
+    MapUtil.part(folder, {
         Size = Vector3.new(16, 1, 30),
         CFrame = CFrame.new(0, -4, 5) * CFrame.Angles(math.rad(-25), 0, 0),
         Color = Color3.fromRGB(60, 60, 70),
         Material = Enum.Material.Metal,
     })
 
-    -- Helios server room
-    local helios = MapUtil.part(folder, {
-        Name = "HeliosCore",
+    -- Lattice core chamber
+    local lattice = MapUtil.part(folder, {
+        Name = "LatticeCore",
         Size = Vector3.new(8, 12, 8),
         Position = Vector3.new(0, -4, -80),
         Color = Color3.fromRGB(150, 200, 255),
         Material = Enum.Material.Neon,
         Transparency = 0.3,
     })
-    helios:SetAttribute("InteractionType", "Hack")
-    helios:SetAttribute("HackDifficulty", 4)
-    helios:SetAttribute("ObjectiveId", "HackTerminal")
+    lattice:SetAttribute("InteractionType", "Hack")
+    lattice:SetAttribute("HackDifficulty", 4)
+    lattice:SetAttribute("ObjectiveId", "HackTerminal")
     local light = Instance.new("PointLight")
     light.Color = Color3.fromRGB(150, 200, 255)
     light.Range = 50
     light.Brightness = 4
-    light.Parent = helios
-    MapUtil.label(folder, "HELIOS AI Core", Vector3.new(0, 4, -80),
+    light.Parent = lattice
+    MapUtil.label(folder, "LATTICE CORE", Vector3.new(0, 4, -80),
         Color3.fromRGB(150, 200, 255))
 
-    -- Endgame choice consoles
-    local function endChoice(name: string, endingId: string, pos: Vector3, color: Color3, label: string)
+    -- Endgame consoles (four; the Helix Ascension console gated by joinedHelix)
+    local function endChoice(name: string, endingId: string, voteId: string,
+                              pos: Vector3, color: Color3, label: string)
         local p = MapUtil.part(folder, {
             Name = name,
             Size = Vector3.new(3, 4, 1),
@@ -94,23 +96,25 @@ function Area51.build(folder: Folder)
         p:SetAttribute("InteractionType", "Hack")
         p:SetAttribute("HackDifficulty", 3)
         p:SetAttribute("EndingId", endingId)
+        p:SetAttribute("EndingVote", voteId)
         MapUtil.label(folder, label, pos + Vector3.new(0, 5, 0), color)
     end
-    endChoice("EndingHelios", "Helios", Vector3.new(-30, -8, -80), Color3.fromRGB(150, 200, 255), "Merge with Helios")
-    endChoice("EndingIlluminati", "Illuminati", Vector3.new(-10, -8, -88), Color3.fromRGB(255, 215, 0), "Restore Illuminati")
-    endChoice("EndingDarkAge", "DarkAge", Vector3.new(10, -8, -88), Color3.fromRGB(120, 30, 30), "Trigger Dark Age")
-    endChoice("EndingMJ12", "MJ12Enforce", Vector3.new(30, -8, -80), Color3.fromRGB(60, 30, 30), "Become MJ12 Enforcer")
+    endChoice("EndingLattice", "Lattice", "endingLattice",
+        Vector3.new(-30, -8, -80), Color3.fromRGB(150, 200, 255), "Lattice Symbiosis")
+    endChoice("EndingQuorum", "Quorum", "endingQuorum",
+        Vector3.new(-10, -8, -88), Color3.fromRGB(255, 215, 0), "Quorum Restoration")
+    endChoice("EndingReset", "Reset", "endingReset",
+        Vector3.new(10, -8, -88), Color3.fromRGB(120, 30, 30), "Network Reset")
+    endChoice("EndingHelixAscension", "HelixAscension", "endingHelixAscension",
+        Vector3.new(30, -8, -80), Color3.fromRGB(60, 30, 30), "Helix Ascension")
 
-    -- MJ12 commandos
+    -- Helix custodian troopers + bots
     EnemyAI.run(EnemyAI.spawn(Vector3.new(-30, 4, 50), "AssaultRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(30, 4, 50), "AssaultRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(0, 4, 80), "SniperRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(-20, -8, -50), "AssaultRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(20, -8, -50), "AssaultRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(0, -8, -70), "GepGun"))
-
-    -- Sector 4 patrol bots: two security bots topside, two spiders
-    -- guarding the underground Helios chamber.
     EnemyAI.run(EnemyAI.spawnSecurityBot(Vector3.new(-15, 4, 20)))
     EnemyAI.run(EnemyAI.spawnSecurityBot(Vector3.new(15, 4, 20)))
     EnemyAI.run(EnemyAI.spawnSpiderBot(Vector3.new(-10, -8, -60)))
@@ -130,13 +134,13 @@ function Area51.build(folder: Folder)
     MapUtil.pickup(folder, "WeaponModAccuracy", 1, Vector3.new(20, -8, -20), Color3.fromRGB(80, 200, 80))
     MapUtil.pickup(folder, "WeaponModRange", 1, Vector3.new(-20, -8, -20), Color3.fromRGB(80, 160, 220))
 
-    -- MJ12 Quartermaster (sells exotic gear; only to MJ12 members).
-    MapUtil.vendor(folder, "MJ12 Quartermaster", Vector3.new(0, -8, -10), "MJ12_QM",
+    -- Helix Quartermaster (only sells to Helix members)
+    MapUtil.vendor(folder, "Helix Quartermaster", Vector3.new(0, -8, -10), "Helix_QM",
         Color3.fromRGB(20, 20, 30))
 
-    -- Transition back to UNATCO HQ
-    MapUtil.transition(folder, "ToUNATCO", Vector3.new(0, 4, 115), Vector3.new(8, 8, 4), "UNATCO_HQ")
-    MapUtil.label(folder, "Exfil -> UNATCO HQ", Vector3.new(0, 9, 115))
+    -- Transition back to AEGIS Tower
+    MapUtil.transition(folder, "ToAegisTower", Vector3.new(0, 4, 115), Vector3.new(8, 8, 4), "AegisTower")
+    MapUtil.label(folder, "Exfil -> AEGIS Tower", Vector3.new(0, 9, 115))
 end
 
-return Area51
+return Vault7

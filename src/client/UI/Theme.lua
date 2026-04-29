@@ -1,5 +1,5 @@
 --!strict
--- Shared visual theme: black + UNATCO blue + Deus Ex amber.
+-- Shared visual theme: black + AEGIS blue + caution amber.
 
 local Theme = {
     Bg = Color3.fromRGB(8, 10, 14),

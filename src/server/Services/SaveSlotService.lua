@@ -5,7 +5,7 @@
 --
 -- DataStore key: "<userId>_<slot>"
 -- Manifest key:  "<userId>_manifest" (small per-user record listing slot
--- summaries: "Slot 1: UNATCO faction, kills=3, civilians=0").
+-- summaries: "Slot 1: AEGIS faction, kills=3, civilians=0").
 
 local Players = game:GetService("Players")
 local DataStoreService = game:GetService("DataStoreService")
@@ -19,8 +19,8 @@ local WorldState = require(script.Parent.Parent.WorldState)
 
 local SaveSlotService = {}
 
-local STORE_NAME = "DeusExSave_v2"
-local MANIFEST_NAME = "DeusExSlots_v2"
+local STORE_NAME = "AegisVeilSave_v1"
+local MANIFEST_NAME = "AegisVeilSlots_v1"
 
 local store: DataStore? = nil
 local manifestStore: DataStore? = nil

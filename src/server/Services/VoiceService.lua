@@ -68,7 +68,7 @@ function VoiceService.playFromInstance(source: Instance, voiceKey: string, audib
     end
 end
 
--- Per-source throttled bark. Use this for enemy alerts so each NSF grunt only
+-- Per-source throttled bark. Use this for enemy alerts so each grunt only
 -- yells one alert per cooldown window.
 function VoiceService.bark(source: Instance, voiceKey: string)
     local key = source:GetDebugId() .. ":" .. voiceKey

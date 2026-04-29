@@ -45,8 +45,8 @@ function InteractionService.handleInteraction(player: Player, target: Instance)
         local count = target:GetAttribute("ItemCount") or 1
         if typeof(itemId) == "string" then
             InventoryService.add(player, itemId, count)
-            if itemId == "KeyAmbrosia" then
-                MissionService.advance(player, "RecoverAmbrosia", 1)
+            if itemId == "KeyHelixVial" then
+                MissionService.advance(player, "RecoverHelixVials", 1)
             end
             target:Destroy()
         end
@@ -102,11 +102,15 @@ function InteractionService.confirmHack(player: Player, target: Instance, succes
     VoiceService.playFor(player, "Mission:hackSuccess")
 
     -- Endgame terminals carry an EndingId attribute; route them through a
-    -- team vote. The vote's outcome ("ending:Helios" etc.) calls
+    -- team vote. The vote's outcome ("ending:Lattice" etc.) calls
     -- EndingService.tryTrigger for every player when majority approves.
     local endingId = target:GetAttribute("EndingId")
     if typeof(endingId) == "string" then
-        VoteService.open("ending" .. endingId)
+        local voteId = target:GetAttribute("EndingVote")
+        if typeof(voteId) ~= "string" then
+            voteId = "ending" .. endingId
+        end
+        VoteService.open(voteId)
         return
     end
 

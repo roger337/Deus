@@ -1,20 +1,20 @@
 --!strict
--- Faction-specific weapon vendors. Each vendor has a stock list (weapon/item +
--- price), and a `gate` predicate that must pass for the player to even open
--- the shop. Different factions sell different things — the NSF won't sell to
--- a UNATCO loyalist; MJ12 won't sell to anyone but their own.
+-- Faction-specific weapon vendors. Each vendor has a stock list (item +
+-- price) and a `gate` predicate that must pass for the player to even open
+-- the shop. Different factions sell different things — the Awakened won't
+-- sell to an AEGIS loyalist; Helix won't sell to anyone but their own.
 
 export type StockEntry = {
-    id: string,         -- weapon or item id
-    price: number,      -- credits
-    quantity: number?,  -- given per purchase (default 1; ammo bundles 30)
+    id: string,
+    price: number,
+    quantity: number?,
 }
 
 export type VendorDef = {
     id: string,
     name: string,
     faction: string,
-    gate: string?,                  -- predicate; see WorldState.evaluate
+    gate: string?,
     rejectMessage: string?,
     greeting: string,
     stock: { StockEntry },
@@ -23,16 +23,15 @@ export type VendorDef = {
 local Vendors: { [string]: VendorDef } = {
 
     -- =====================================================================
-    -- UNATCO Quartermaster: standard issue. Available to UNATCO faction or
-    -- before the player has defected.
+    -- AEGIS Quartermaster: standard issue. Refuses defectors.
     -- =====================================================================
-    UNATCO_QM = {
-        id = "UNATCO_QM",
-        name = "UNATCO Quartermaster",
-        faction = "UNATCO",
-        gate = "!flag:defected|faction:UNATCO",
+    AEGIS_QM = {
+        id = "AEGIS_QM",
+        name = "AEGIS Quartermaster",
+        faction = "AEGIS",
+        gate = "!flag:defected|faction:AEGIS",
         rejectMessage = "You're flagged as a defector. We don't sell to traitors.",
-        greeting = "Standard issue, Agent. Credit chits accepted.",
+        greeting = "Standard issue, operative. Credit chits accepted.",
         stock = {
             { id = "Pistol10mm", price = 200 },
             { id = "AssaultRifle", price = 600 },
@@ -50,16 +49,16 @@ local Vendors: { [string]: VendorDef } = {
     },
 
     -- =====================================================================
-    -- NSF Quartermaster (Tracer Tong's clinic). Stealth and unconventional
-    -- gear. Refuses UNATCO loyalists.
+    -- Awakened Armorer (Cael's clinic). Stealth and unconventional gear.
+    -- Refuses AEGIS loyalists.
     -- =====================================================================
-    NSF_QM = {
-        id = "NSF_QM",
-        name = "NSF Armorer",
-        faction = "NSF",
-        gate = "faction:NSF|flag:defected",
-        rejectMessage = "You're a UNATCO badge. Get out of my shop.",
-        greeting = "Whatever Tong sent you for, I've probably got it. Cash on the table.",
+    Awakened_QM = {
+        id = "Awakened_QM",
+        name = "Awakened Armorer",
+        faction = "IronPromise",
+        gate = "faction:IronPromise|flag:defected",
+        rejectMessage = "You're an AEGIS badge. Get out of my shop.",
+        greeting = "Whatever Cael sent you for, I've probably got it. Cash on the table.",
         stock = {
             { id = "StealthPistol", price = 500 },
             { id = "MiniCrossbow", price = 350 },
@@ -76,16 +75,15 @@ local Vendors: { [string]: VendorDef } = {
     },
 
     -- =====================================================================
-    -- MJ12 Quartermaster (Area 51, Sector 4). High-end / exotic gear.
-    -- Only sells if the player has joined MJ12.
+    -- Helix Quartermaster (Vault-7). Custodial-grade gear; only Helix.
     -- =====================================================================
-    MJ12_QM = {
-        id = "MJ12_QM",
-        name = "MJ12 Quartermaster",
-        faction = "MJ12",
-        gate = "faction:MJ12|flag:joinedMJ12",
+    Helix_QM = {
+        id = "Helix_QM",
+        name = "Helix Quartermaster",
+        faction = "Helix",
+        gate = "faction:Helix|flag:joinedHelix",
         rejectMessage = "Restricted access. Authorization not on file.",
-        greeting = "Director Simons authorized full inventory access. Choose carefully, Enforcer.",
+        greeting = "Director Cole authorized full inventory access. Choose carefully, Custodian.",
         stock = {
             { id = "PlasmaRifle", price = 1500 },
             { id = "GepGun", price = 2200 },

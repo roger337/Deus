@@ -1,5 +1,6 @@
 --!strict
--- Skill system. Each rank costs more points, mirroring Deus Ex's tiers.
+-- Skill system. Each rank costs more points and applies a multiplier
+-- to the relevant gameplay value (weapon damage, minigame difficulty, etc.).
 -- Multiplier is applied to weapon damage / minigame difficulty / etc.
 
 export type SkillRank = "Untrained" | "Trained" | "Advanced" | "Master"
@@ -34,10 +35,10 @@ local Skills: { [string]: SkillDef } = {
         costs = { Untrained = 0, Trained = 900, Advanced = 1800, Master = 3300 },
         multipliers = { Untrained = 1.0, Trained = 1.3, Advanced = 1.6, Master = 2.0 },
     },
-    LowTech = {
-        id = "LowTech",
-        name = "Low-Tech",
-        description = "Mastery of melee weapons.",
+    Melee = {
+        id = "Melee",
+        name = "Melee",
+        description = "Mastery of melee and thrown weapons.",
         costs = { Untrained = 0, Trained = 450, Advanced = 900, Master = 1800 },
         multipliers = { Untrained = 1.0, Trained = 1.5, Advanced = 2.0, Master = 3.0 },
     },

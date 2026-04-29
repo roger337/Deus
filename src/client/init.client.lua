@@ -112,4 +112,4 @@ UserInputService.InputBegan:Connect(function(input, processed)
     end
 end)
 
-print("[DeusEx] Client ready.")
+print("[AegisVeil] Client ready.")

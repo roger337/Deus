@@ -1,162 +1,131 @@
-# Deus Ex (Roblox) — A simplified remake
+# AEGIS: Veil — A cyberpunk-conspiracy game on Roblox
 
-A condensed, playable homage to the 2000 Ion Storm classic, built for Roblox Studio with [Rojo](https://rojo.space/) for source-controllable Luau development.
+A condensed, playable single-narrative-arc game built for Roblox Studio with [Rojo](https://rojo.space/) for source-controllable Luau development. **All code, fiction, characters, factions, locations, and visual design are original to this project.**
+
+## Premise
+
+Helix is a galactic custodial bureau that has quietly "managed" Earth for centuries. Its primary tool is a global perception filter that shapes what humans see — and what humans *want* to see. AEGIS is Earth's covert defense agency; most of its operatives believe they're fighting an alien threat, not realizing the agency itself has been infiltrated. The Awakened are humans who've pierced the veil and are working to expose Helix.
+
+You play an AEGIS contract operative with reverse-engineered biomod implants. The biomods enhance you, but they also *reveal* — they're the only known human-deployable tech that can punch through Helix's perception filter. Run Refraction Veil and you become something the filter can't render. Run Smart-Sights and you start to notice which humans around you aren't quite human anymore.
 
 ## Pillars
 
-- **1-4 player co-op** — server cap of 4. Shared world, shared map, shared objective progress; per-player skills, augs, inventory, weapon mods, kill counts. Friendly fire is off (player-on-player damage is dropped at the boundary).
-- **Vote-majority for narrative beats** — defection at Tracer Tong and the three Area 51 endings open a team vote (30s timeout, ties go to first option). The winning option's effect is applied to every player — one canonical narrative per session.
-- **Skills + augmentations + inventory** — three orthogonal progression systems, just like the original.
-- **Multiple solutions** — every level has lethal and non-lethal paths, locked doors that open with a lockpick OR a hack OR a key, hostile patrols you can avoid with stealth/cloak.
-- **Five iconic maps** — Liberty Island (intro), UNATCO HQ (hub), Hell's Kitchen, Hong Kong, Area 51 (endgame).
-- **Three enemy kinds** — NSF human grunts (radio chatter, ranged weapons), Security Bots (wheeled, laser, EMP-vulnerable), Spider Bots (skitter, melee zap). All share the same state machine but use different vision cones, weapons, voice keys, and visuals — see `EnemyAI.lua`.
-- **11 weapons + 9 weapon mods** — pistols, rifles, sniper, GEP gun, LAMs, throwing knives, plasma rifle, stealth pistol, riot prod, combat knife. Mods (accuracy, range, recoil, reload, clip, scope, laser, silencer, damage) attach to compatible weapons and modify effective stats at fire time.
-- **Branching dialog** — talk to Paul Denton, Anna Navarre, Dr. Reyes, Tracer Tong.
-- **Ending choice** — four terminals in Area 51 (Helios merge / Illuminati / Dark Age / MJ12 Enforcer). The Helios merge is locked if you've killed 3+ civilians; the MJ12 Enforcer ending requires accepting Walton Simons' offer earlier in the campaign.
-- **Faction-specific vendors** — UNATCO Quartermaster (UNATCO HQ, standard issue), NSF Armorer (Tong's clinic, stealth gear), MJ12 Quartermaster (Area 51, exotic). Each gates on faction/flags and refuses the wrong allegiance.
-- **Three save slots per user** — pick on join. Each slot holds independent inventory, augs, skills, faction, flags, counters. Replay routes without erasing old saves.
-- **Branching narrative** — `WorldState` tracks faction, reputation, flags ("defected", "killedAnna"), and counters ("civiliansKilled"). Dialog trees gate options/intros via a small predicate DSL (`flag:defected`, `counter:civiliansKilled<3`, `faction:NSF`). Tracer Tong gives a player-choice defection moment in Hong Kong; defecting closes UNATCO HQ as a transition target. Paul Denton has 5 greeting variants depending on your behavior. Anna Navarre can be confronted and made hostile (or spared) — Paul reacts later.
-
-## Co-op model
-
-| Aspect | Behavior |
-|---|---|
-| Server cap | 4 (`Players.MaxPlayers = 4` in `default.project.json`) |
-| Map state | One shared world; map reload on transition affects everyone |
-| Objective progress | Shared — any player picking up an Ambrosia vial advances all teammates' counters |
-| Skills, augs, inventory, mods, ammo | Per-player |
-| Kill / civilian / KO counters | Per-player (used for personal eligibility) |
-| Defection at Tracer Tong | Team vote — majority decides for everyone |
-| Endings at Area 51 | Team vote per terminal — pass-vote runs the epilogue for all |
-| Friendly fire | Off |
-
-Adding a new vote = one entry in `src/shared/Config/Votes.lua` (`prompt`, `options`, `timeoutSec`) plus a single `effect = "vote:myVote"` line wherever you want to trigger it.
-
-## Branching reference
-
-Predicate DSL (used in `Dialog.lua`'s `requires` and per-tree `selectStart`):
-
-| Form | Meaning |
-|---|---|
-| `flag:foo` / `!flag:foo` | `WorldState.flags.foo` is/isn't truthy |
-| `faction:NSF` / `!faction:UNATCO` | current faction |
-| `counter:kills>=10` (`>`, `<`, `<=`, `==`) | counter comparison |
-| `rep:UNATCO<0` | reputation comparison |
-| `aug:Cloak` / `!aug:Cloak` | augmentation installed (any level) |
-| `aug:Cloak>=3` | aug installed at level 3+ |
-| `;` | AND clauses inside a single predicate |
-| `\|` | OR clauses across whole predicate |
-
-Effects (used in `DialogOption.effect` — semicolon-chained):
-
-| Form | Meaning |
-|---|---|
-| `flag:foo` / `!flag:foo` | set/clear a named flag |
-| `faction:NSF` | switch faction |
-| `rep:UNATCO+10` / `rep:NSF-25` | adjust reputation |
-| `hostile:Anna` | call a registered code handler (e.g. flip Anna NPC to enemy) |
+- **1-4 player co-op** — server cap of 4. Shared world, shared objective progress; per-player skills, biomods, inventory, weapon mods, kill counts. Friendly fire off.
+- **Vote-majority for narrative beats** — defection (Cael), Helix recruitment (Director Cole), and the four endgame choices all open a team vote.
+- **Skills + biomods + inventory** — three orthogonal progression systems.
+- **Multiple solutions** — every level has lethal and non-lethal paths, locked doors that open via lockpick OR hack OR key, hostile patrols you can avoid with stealth/cloak.
+- **Five maps** — Bayfront District (intro), AEGIS Tower (hub), Hardline District, Pacific Anchor (free-port), Vault-7 (Sierras endgame).
+- **Three enemy kinds** — human grunts, Security Bots (wheeled lasers, EMP-vulnerable), Spider Bots (skitter, melee zap).
+- **11 weapons + 9 weapon mods** — stealth pistol, marksman rifle, plasma rifle, sticky charges, throwing blades, etc. Mods (accuracy, range, recoil, reload, clip, scope, laser, silencer, damage) attach per-weapon.
+- **Four endings** — Lattice Symbiosis, Quorum Restoration, Network Reset, Helix Ascension. Lattice is locked at 3+ civilian deaths; Helix Ascension requires accepting Director Cole's offer.
+- **Faction-specific vendors** — AEGIS Quartermaster, Awakened Armorer, Helix Quartermaster. Each gates on faction/flags.
+- **Three save slots per user** — pick on join. Replay routes without erasing prior runs.
+- **Branching dialog** — `WorldState` tracks faction, reputation, flags ("defected", "killedVega", "joinedHelix"), counters ("kills", "civiliansKilled"). Dialog gates on a small predicate DSL.
+- **Aug-reactive NPCs** — Dr. Halberg comments on whatever biomods you're running; Vega and Cael notice high-level Targeting and Cloak.
 
 ## Setup
 
 Requires the [Rojo VS Code extension](https://marketplace.visualstudio.com/items?itemName=evaera.vscode-rojo) (or the Rojo CLI) and the Rojo Studio plugin.
 
 ```bash
-# install rojo if you haven't
 cargo install rojo
-# or: foreman install / aftman install per your toolchain
-
-# from the repo root, sync into Studio
-rojo serve
+rojo serve              # sync into Studio
+# or
+rojo build -o Game.rbxlx
 ```
 
 In Roblox Studio: open a new place → connect the Rojo plugin → press play (F5).
 
-To export a `.rbxlx` directly without syncing live:
-
-```bash
-rojo build -o DeusEx.rbxlx
-```
-
 ## Controls
 
-| Key                | Action                                                  |
-| ------------------ | ------------------------------------------------------- |
-| `WASD` / `Space`   | Move / jump                                             |
-| `LMB`              | Fire equipped weapon                                    |
-| `RMB`              | Aim down sights (tighter spread)                        |
-| `R`                | Reload                                                  |
-| `E`                | Interact (NPC, pickup, door, terminal, transition)      |
-| `F`                | Toggle first-person camera                              |
-| `Tab`              | Inventory                                               |
-| `K`                | Skills                                                  |
-| `U`                | Augmentations                                           |
-| `1` `2` `3` `4` `5`| Quick-equip Pistol / Rifle / Heavy / Melee / Demolition |
-| `SPACE`            | Confirm pick during lockpick minigame                   |
-| Type `0-9 A-F`     | Hack minigame: enter the displayed code                 |
+| Key | Action |
+| --- | --- |
+| `WASD` / `Space` | Move / jump |
+| `LMB` | Fire equipped weapon |
+| `RMB` | Aim down sights |
+| `R` | Reload |
+| `E` | Interact (NPC, pickup, door, terminal, vendor, transition) |
+| `F` | Toggle first-person camera |
+| `Tab` | Inventory |
+| `K` | Skills |
+| `U` | Biomods |
+| `1`-`5` | Quick-equip Pistol / Rifle / Heavy / Melee / Demolition |
+| `SPACE` | Confirm pick during lockpick minigame |
+| `0-9 A-F` | Type displayed code during hack minigame |
 
-## Design notes
+## Co-op model
 
-- **Server is authoritative.** Every weapon hit is re-cast on the server before damage is applied, and ammo is decremented server-side. Augs and skills mutate state only via `RemoteEvent` calls handled in `src/server/Services/`.
-- **Configuration as data.** `src/shared/Config/` modules are pure data tables (`Weapons`, `Skills`, `Augmentations`, `Items`, `Dialog`, `Objectives`). Tuning a weapon, adding an aug, or rewriting an NPC means editing a single table, not changing logic.
-- **One file per system.** Services in `src/server/Services/` are self-contained; UI panels in `src/client/UI/` likewise. Adding a new system means adding a sibling file and one line in `init.server.lua` / `init.client.lua`.
-- **Maps as build scripts.** Each map module returns a `build(folder)` function and a `spawnPoint`. `LevelManager` clears the world and calls `build()` on transitions, so you can edit a map and reload by re-running.
-- **DataStore is best-effort.** Saves succeed in published places; soft-fails in Studio without API services.
+| Aspect | Behavior |
+| --- | --- |
+| Server cap | 4 (`Players.MaxPlayers = 4` in `default.project.json`) |
+| Map state | One shared world; map reload on transition affects everyone |
+| Objective progress | Shared — any player advancing the counter advances it for the team |
+| Skills, biomods, inventory, mods, ammo, credits | Per-player |
+| Defection at Cael | Team vote — majority decides for everyone |
+| Helix recruitment at Director Cole | Team vote |
+| Endings at Vault-7 | Team vote per terminal |
+| Friendly fire | Off |
+
+## Branching reference
+
+Predicate DSL (used in `Dialog.lua`'s `requires` and per-tree `selectStart`):
+
+| Form | Meaning |
+| --- | --- |
+| `flag:foo` / `!flag:foo` | `WorldState.flags.foo` is/isn't truthy |
+| `faction:AEGIS` / `!faction:Helix` | current faction |
+| `counter:kills>=10` (`>`, `<`, `<=`, `==`) | counter comparison |
+| `rep:AEGIS<0` | reputation comparison |
+| `aug:Cloak` / `!aug:Cloak` | biomod installed (any level) |
+| `aug:Cloak>=3` | biomod installed at level 3+ |
+| `;` | AND clauses inside one predicate |
+| `\|` | OR clauses across whole predicate |
+
+Effects (used in `DialogOption.effect` — semicolon-chained):
+
+| Form | Meaning |
+| --- | --- |
+| `flag:foo` / `!flag:foo` | set/clear a named flag |
+| `faction:Helix` | switch faction |
+| `rep:AEGIS+10` / `rep:Helix-25` | adjust reputation |
+| `vote:defect` | open a team vote (see `Votes.lua`) |
+| `hostile:Vega` | call a registered code handler |
 
 ## Voice lines
 
-The game has a full voice pipeline wired up: dialog lines, enemy combat barks ("Hostile! Take him down!"), JC's hurt grunts, and mission cues all fire `PlayVoice` events from the server. Until you upload audio, **the system gracefully no-ops** — barks still display as subtitles and dialog UI still shows the line. Adding audio is a one-file change.
+`src/shared/Config/VoiceLines.lua` is the single registry — string keys mapped to `{ assetId, subtitle, duration, prefix?, pitch?, volume? }`. Default `assetId = ""` plays nothing; subtitles still display. **Add your own audio:**
 
-### Adding your own audio
+1. Upload your own `.ogg`/`.mp3` to Roblox Studio (Toolbox → Inventory → My Audio).
+2. Copy the resulting `rbxassetid://NUMBER`.
+3. Paste into the matching key.
 
-1. Open `src/shared/Config/VoiceLines.lua`. Each entry is a string key mapped to `{ assetId = "", duration = N, ... }`.
-2. Upload your audio in Roblox Studio (`View → Toolbox → Inventory → My Audio`) and copy the resulting `rbxassetid://<NUMBER>` URL.
-3. Paste it into the `assetId` field for the matching key. Reload the place; that line is now voiced.
-
-### Voice key naming
-
-| Key pattern                       | When it plays                                                          |
-| --------------------------------- | ---------------------------------------------------------------------- |
-| `Dialog:<tree>:<node>`            | Each time `DialogService` shows that node. Subtitle is the dialog text |
-| `NSF:spotted` / `lostTarget` etc. | Enemy AI bark (positional, 3D audio)                                   |
-| `JC:hurt` / `JC:lowHealth`        | Player took damage / dropped below 25 HP                               |
-| `Mission:objectiveAdded` / etc.   | Global mission cue (no positional audio)                               |
-
-### How the pipeline works
-
-- `VoiceService.playFor(player, key)` — server fires a cue to one player.
-- `VoiceService.playFromInstance(npc, key, range?)` — positional, 3D-audible within range.
-- `VoiceService.bark(npc, key)` — same as above but throttled to once per 4 s per source so AI loops can call it freely.
-- Server only sends the **key + source position** — never the asset URL — keeping the wire small. The client looks up the asset locally from `VoiceLines.lua`.
-- Bark-type subtitles appear in a bottom-center caption GUI; dialog-type voice lines reuse the existing `DialogUI` text (no double display).
-
-### Generating voice lines (suggestion)
-
-If you want to populate dozens of lines fast, you can:
-- Record yourself / a friend in any DAW, export to `.ogg` or `.mp3`, upload to Roblox.
-- Use a TTS tool (ElevenLabs, Coqui, etc.) per node, then upload. Keep one voice per character (Paul Denton, Anna Navarre, etc.) for consistency.
-- Roblox enforces a moderation pass on uploaded audio and a 7-second-or-30-second tier — make sure each clip fits within your `duration` budget.
+All audio you upload must be your own work or properly licensed. The repo ships with no audio assets.
 
 ## Repository layout
 
 ```
 src/
 ├── shared/                       # ReplicatedStorage.Shared
-│   ├── Remotes.lua               # central RemoteEvent/Function registry
+│   ├── Remotes.lua
 │   └── Config/
 │       ├── Weapons.lua
+│       ├── WeaponMods.lua
 │       ├── Skills.lua
-│       ├── Augmentations.lua
+│       ├── Augmentations.lua    # biomods
 │       ├── Items.lua
 │       ├── Dialog.lua
 │       ├── Objectives.lua
-│       └── VoiceLines.lua       # paste in audio asset IDs here
+│       ├── Votes.lua
+│       ├── Vendors.lua
+│       └── VoiceLines.lua
 ├── server/                       # ServerScriptService.Server
-│   ├── init.server.lua           # boot
+│   ├── init.server.lua
 │   ├── PlayerData.lua
-│   ├── EnemyAI.lua
+│   ├── WorldState.lua            # narrative state
+│   ├── EnemyAI.lua               # human / SecurityBot / SpiderBot
 │   ├── LevelManager.lua
 │   ├── Services/
-│   │   ├── DataStoreService.lua
+│   │   ├── SaveSlotService.lua
 │   │   ├── InventoryService.lua
 │   │   ├── SkillService.lua
 │   │   ├── AugService.lua
@@ -164,15 +133,18 @@ src/
 │   │   ├── DialogService.lua
 │   │   ├── InteractionService.lua
 │   │   ├── MissionService.lua
+│   │   ├── VoteService.lua
+│   │   ├── VendorService.lua
+│   │   ├── EndingService.lua
 │   │   └── VoiceService.lua
 │   └── Maps/
-│       ├── init.lua              # map registry
+│       ├── init.lua
 │       ├── MapUtil.lua
-│       ├── LibertyIsland.lua
-│       ├── UnatcoHQ.lua
-│       ├── HellsKitchen.lua
-│       ├── HongKong.lua
-│       └── Area51.lua
+│       ├── Bayfront.lua
+│       ├── AegisTower.lua
+│       ├── HardlineDistrict.lua
+│       ├── PacificAnchor.lua
+│       └── Vault7.lua
 └── client/                       # StarterPlayer.StarterPlayerScripts.Client
     ├── init.client.lua
     ├── Controllers/
@@ -186,6 +158,10 @@ src/
         ├── SkillsUI.lua
         ├── AugUI.lua
         ├── DialogUI.lua
+        ├── EndingScreen.lua
+        ├── VoteUI.lua
+        ├── VendorUI.lua
+        ├── SlotSelectUI.lua
         └── Minigames/
             ├── Lockpick.lua
             └── Hack.lua
@@ -193,13 +169,16 @@ src/
 
 ## Extending
 
-- **Add a weapon:** drop a new entry in `src/shared/Config/Weapons.lua`. Spawn it in a map via `MapUtil.pickup(folder, "MyGun", 1, pos, color)`.
-- **Add a weapon mod:** entry in `src/shared/Config/WeaponMods.lua` (id, compatible slots, effects list). Add a matching `WeaponModXxx` item in `Items.lua` so it's pickup-able. The mod is automatically merged into effective weapon stats at fire time — no service edits needed unless you introduce a new field op.
-- **Add an aug:** entry in `Augmentations.lua`. If active, set `energyPerSec` and `magnitudes`; the drain loop in `AugService` handles it. For new behaviors (e.g., aim aug), read `AugService.magnitude(player, "MyAug")` from the relevant service.
-- **Add a map:** copy `Maps/HellsKitchen.lua`, change `id`/`displayName`/`spawnPoint`/`build`, register in `Maps/init.lua`, and add a `MapUtil.transition` to it from another map.
-- **Add a dialog tree:** new entry in `Dialog.lua`. Tag an NPC with `model:SetAttribute("DialogTree", "MyTree")`.
-- **Add an objective:** entry in `Objectives.lua`; call `MissionService.start(player, id)` and `MissionService.advance(player, id)` from wherever the trigger lives.
-- **Add a vendor:** entry in `Vendors.lua` (id, faction, gate predicate, stock list with prices). Spawn the NPC with `MapUtil.vendor(folder, "NameOnTag", pos, "VendorId")`.
-- **Add an ending:** entry in `EndingService.Endings` (color, eligibility predicate, paragraphs). Add a corresponding vote in `Votes.lua` and an Area 51 console with `EndingId = "..."`.
-- **React to augs in dialog:** add a `selectStart` variant `{ when = "aug:Cloak>=3", node = "intro_cloak" }` to any dialog tree.
-- **Add a save slot summary field:** edit `SaveSlotService.writeManifest` to include the field; the SlotSelectUI auto-displays whatever's in the manifest table.
+- **Add a weapon:** entry in `Weapons.lua` + `MapUtil.pickup(folder, "MyGun", 1, pos, color)` somewhere.
+- **Add a biomod:** entry in `Augmentations.lua`. If active, set `energyPerSec` and `magnitudes`; the drain loop in `AugService` handles it.
+- **Add a weapon mod:** entry in `WeaponMods.lua` (compatible slots, `{field, op, amount}` effects). Add the matching `WeaponModXxx` item in `Items.lua`.
+- **Add a map:** copy a map module, change `id`/`displayName`/`spawnPoint`/`build`, register in `Maps/init.lua`, add a `MapUtil.transition` from another map.
+- **Add a dialog tree:** entry in `Dialog.lua`. Tag an NPC with `model:SetAttribute("DialogTree", "MyTree")`.
+- **Add a vote:** entry in `Votes.lua` (prompt, options, timeout). Trigger via `effect = "vote:myVote"` from any dialog option.
+- **Add an ending:** entry in `EndingService.Endings` (color, eligibility predicate, paragraphs). Add a corresponding vote in `Votes.lua` and a Vault-7 console with `EndingId = "..."`.
+- **Add a vendor:** entry in `Vendors.lua`. Spawn the NPC with `MapUtil.vendor(folder, "Name", pos, "VendorId")`.
+- **React to biomods in dialog:** add a `selectStart` variant `{ when = "aug:Cloak>=3", node = "intro_cloak" }` to any dialog tree.
+
+## Originality
+
+All code, fiction, character names, faction names, location names, biomod names, weapon names, and visual designs in this repository are original to this project. No code, audio, art, or text was copied or adapted from any commercial game. The genre conventions used (cybernetic enhancement, multiple endings, branching dialog, faction reputation, hub-and-spoke mission structure) are common-pattern game systems, not protected expression.

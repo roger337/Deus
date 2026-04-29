@@ -31,7 +31,7 @@ local function isHumanoidEnemy(model: Instance?): (Humanoid?, boolean)
     local hum = model:FindFirstChildOfClass("Humanoid")
     if not hum then return nil, false end
     -- enemies are tagged on the model
-    local isEnemy = model:GetAttribute("Faction") == "NSF"
+    local isEnemy = model:GetAttribute("Faction") == "Hostile"
     return hum, isEnemy
 end
 
@@ -89,16 +89,16 @@ function CombatService.applyDamageToHumanoid(
             local faction = targetModel:GetAttribute("Faction")
             local data = PlayerData.get(attacker)
             data.nonLethalRun = false
-            if faction == "NSF" or faction == "Hostile" then
+            if faction == "Hostile" then
                 data.kills += 1
                 WorldState.bumpCounter(attacker, "kills", 1)
-                if targetModel.Name == "Anna Navarre" or targetModel:GetAttribute("CharacterId") == "Anna" then
-                    WorldState.setFlag(attacker, "killedAnna", true)
+                if targetModel:GetAttribute("CharacterId") == "Vega" then
+                    WorldState.setFlag(attacker, "killedVega", true)
                 end
             elseif faction == "Civilian" then
                 WorldState.bumpCounter(attacker, "civiliansKilled", 1)
                 WorldState.adjustReputation(attacker, "Civilian", -10)
-                WorldState.adjustReputation(attacker, "UNATCO", -5)
+                WorldState.adjustReputation(attacker, "AEGIS", -5)
                 local notify = Remotes.get("Notify") :: RemoteEvent
                 notify:FireClient(attacker, "[!] Civilian killed.")
             end
@@ -184,10 +184,10 @@ function CombatService.applyDamageToPlayer(player: Player, amount: number, sourc
 
     -- "I'm hit" bark, with a louder one if we just crossed below 25 HP.
     if amount >= 8 then
-        VoiceService.playFor(player, "JC:hurt")
+        VoiceService.playFor(player, "Operative:hurt")
     end
     if prevHealth >= 25 and data.health < 25 and data.health > 0 then
-        VoiceService.playFor(player, "JC:lowHealth")
+        VoiceService.playFor(player, "Operative:lowHealth")
     end
 
     local char = player.Character

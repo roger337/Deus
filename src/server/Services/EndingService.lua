@@ -1,8 +1,9 @@
 --!strict
--- The three Area 51 endings. Each ending terminal carries an `EndingId`
--- attribute ("Helios" | "Illuminati" | "DarkAge"). When the player interacts
--- with one, EndingService validates eligibility and fires `ShowEnding` to
--- the client with the right epilogue text.
+-- The four Vault-7 endings. Each ending terminal carries an `EndingId`
+-- attribute ("Lattice" | "Quorum" | "Reset" | "HelixAscension"). When a
+-- team vote on the corresponding ending passes, EndingService validates
+-- eligibility and fires `ShowEnding` to every player with the right
+-- epilogue text.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -16,71 +17,71 @@ local EndingService = {}
 export type EndingDef = {
     id: string,
     title: string,
-    color: { number },          -- {R, G, B}
-    eligible: string?,          -- predicate; nil = always eligible
+    color: { number },
+    eligible: string?,
     blockedReason: string?,
-    epilogue: { string },       -- paragraphs of epilogue text
+    epilogue: { string },
     voiceKey: string?,
 }
 
 local Endings: { [string]: EndingDef } = {
-    Helios = {
-        id = "Helios",
-        title = "MERGE WITH HELIOS",
+    Lattice = {
+        id = "Lattice",
+        title = "LATTICE SYMBIOSIS",
         color = { 150, 200, 255 },
-        eligible = "!flag:heliosLocked",
-        blockedReason = "HELIOS rejects integration: too many civilian casualties registered. The AI will not bond with a flawed vessel.",
+        eligible = "!flag:latticeLocked",
+        blockedReason = "The Lattice rejects integration: too many civilian casualties recorded. The pattern reads as a vector for further harm; access is refused.",
         epilogue = {
-            "JC Denton steps into the bay. Coolant mist rises around the merge cradle.",
-            "He hears HELIOS for the first time without a wire — a chorus of every voice on every network, all at once.",
-            "When the merge completes there is no JC, and there is no HELIOS. There is something else. Something wiser. Something kinder, perhaps.",
-            "Humanity will know it soon enough.",
-            "[ENDING: HELIOS MERGE]",
+            "The operative steps into the Lattice cradle. Coolant mist coils around the merge harness.",
+            "For the first time the perception filter is not something happening *to* humans — it becomes a thing humans share, can read, can refuse. Around the world, in the same instant, billions of people see clearly. Some weep. Some stop their cars in the middle of the road. Some keep working as if nothing happened.",
+            "Helix's custodial network is severed by mutual consent.",
+            "What humanity does next is its own to decide. For the first time in centuries.",
+            "[ENDING: LATTICE SYMBIOSIS]",
         },
-        voiceKey = "Ending:Helios",
+        voiceKey = "Ending:Lattice",
     },
-    Illuminati = {
-        id = "Illuminati",
-        title = "RESTORE THE ILLUMINATI",
+    Quorum = {
+        id = "Quorum",
+        title = "QUORUM RESTORATION",
         color = { 220, 180, 60 },
         eligible = nil,
         epilogue = {
-            "JC routes the Helios uplink through the old Illuminati relay. Morgan Everett's voice cuts in on the secure channel.",
-            "\"Welcome back, JC. The world will be... quieter, now. Older orders will keep it.\"",
-            "MJ12 burns. The new world looks much like the old one, ruled from the shadows by men who know better.",
-            "JC Denton tells himself that some things are worth preserving.",
-            "[ENDING: ILLUMINATI]",
+            "The operative routes Lattice control to the old families. The Quorum convenes, smiles, accepts the keys.",
+            "Helix is ejected from the planet within a generation — quietly, by deal, not by force. The veil stays in place. The world looks much the same. The masters are simply human again.",
+            "It is a smaller cage. It is still a cage.",
+            "The operative tells themself that smaller is better. Most nights, they believe it.",
+            "[ENDING: QUORUM RESTORATION]",
         },
-        voiceKey = "Ending:Illuminati",
+        voiceKey = "Ending:Quorum",
     },
-    DarkAge = {
-        id = "DarkAge",
-        title = "TRIGGER THE DARK AGE",
+    Reset = {
+        id = "Reset",
+        title = "NETWORK RESET",
         color = { 120, 30, 30 },
         eligible = nil,
         epilogue = {
-            "JC sets the Aquinas overrides. The global communications backbone fails section by section.",
-            "Banks close. Markets stop. Governments fragment to whichever city still has power.",
-            "It will be a hard century. Maybe a hard millennium. But humanity will choose what comes next, without HELIOS, without Illuminati, without MJ12.",
+            "The operative sets the kill commands. The Lattice fails section by section. The perception filter does not switch off — it shatters.",
+            "Across the planet, billions of people see, all at once, things their nervous systems were never tuned to hold. Cities go dark. Markets close. Hospitals fill.",
+            "It will be a hard century. Maybe a hard millennium. But humanity will choose what comes next on its own — without Helix, without the Quorum, without anyone whispering inside its head.",
             "Whether they choose well — that is up to them.",
-            "[ENDING: DARK AGE]",
+            "[ENDING: NETWORK RESET]",
         },
-        voiceKey = "Ending:DarkAge",
+        voiceKey = "Ending:Reset",
     },
-    MJ12Enforce = {
-        id = "MJ12Enforce",
-        title = "BECOME THE MJ12 ENFORCER",
+    HelixAscension = {
+        id = "HelixAscension",
+        title = "HELIX ASCENSION",
         color = { 60, 30, 30 },
-        eligible = "flag:joinedMJ12",
-        blockedReason = "Walton Simons has not extended his offer. This ending is not available.",
+        eligible = "flag:joinedHelix",
+        blockedReason = "Director Cole's offer was never extended to your team. This ending is not available.",
         epilogue = {
-            "Walton Simons greets JC at the Sector 4 elevator with a thin smile. \"Welcome to MJ12, Agent Denton. We have... use for someone of your caliber.\"",
-            "JC's nano-augs are reflashed with MJ12 master keys. Helios is partitioned, leashed, and made to serve.",
-            "Order is restored from above. Dissidents disappear quietly. UNATCO becomes the public face; MJ12 stays in the shadows where it has always belonged.",
-            "JC Denton tells himself the world is safer this way. Most nights, he believes it.",
-            "[ENDING: MJ12 ENFORCER]",
+            "Director Cole greets the operative at the Lattice cradle. His smile takes a fraction of a second too long to assemble.",
+            "The operative's biomods are reflashed with Custodial master keys. The veil becomes a tool in their hand — not something done to them, but something they do, now, to others.",
+            "Order is preserved. Dissidents stop dissenting. The new Custodian is gentler than the last; they remember being human.",
+            "Most nights, they tell themself the world is safer this way.",
+            "[ENDING: HELIX ASCENSION]",
         },
-        voiceKey = "Ending:MJ12Enforce",
+        voiceKey = "Ending:HelixAscension",
     },
 }
 
@@ -96,7 +97,6 @@ function EndingService.tryTrigger(player: Player, endingId: string): boolean
         return false
     end
 
-    -- Set the canonical flag.
     WorldState.setFlag(player, "chosen" .. endingId, true)
 
     local ev = Remotes.get("ShowEnding") :: RemoteEvent

@@ -1,6 +1,7 @@
 --!strict
 -- Inventory items, ammo, consumables, key items.
--- Roughly mirrors the Deus Ex inventory grid; size is in cells (w*h).
+-- Inventory items: weapons, ammo, consumables, key items, weapon mods.
+-- Size is in grid cells (w*h) for the Tetris-style inventory grid.
 
 export type ItemDef = {
     id: string,
@@ -27,11 +28,11 @@ local Items: { [string]: ItemDef } = {
     },
     Biocell = {
         id = "Biocell",
-        name = "Bio-Electric Cell",
+        name = "Power Cell",
         category = "Consumable",
         width = 1, height = 1,
         stackable = true, stackMax = 20,
-        description = "Restores 100 bio-energy.",
+        description = "Compact bio-electric battery. Restores 100 energy to your biomods.",
         useEffect = "RestoreEnergy", valueAmount = 100,
     },
     Lockpick = {
@@ -52,19 +53,19 @@ local Items: { [string]: ItemDef } = {
     },
     AugCanister = {
         id = "AugCanister",
-        name = "Augmentation Canister",
+        name = "Biomod Chip",
         category = "Aug",
         width = 1, height = 1,
         stackable = true, stackMax = 10,
-        description = "Install one nano-augmentation at a Medical Bot.",
+        description = "Install one biomod at an AutoMedic.",
     },
     AugUpgradeCanister = {
         id = "AugUpgradeCanister",
-        name = "Augmentation Upgrade",
+        name = "Biomod Upgrade",
         category = "Aug",
         width = 1, height = 1,
         stackable = true, stackMax = 10,
-        description = "Upgrades an existing nano-augmentation by one level.",
+        description = "Upgrades an existing biomod by one level.",
     },
     Ammo10mm = {
         id = "Ammo10mm",
@@ -151,13 +152,13 @@ local Items: { [string]: ItemDef } = {
     WeaponModDamage = { id = "WeaponModDamage", name = "Damage Mod", category = "WeaponMod",
         width = 1, height = 1, stackable = true, stackMax = 5,
         description = "Install to increase base damage by 25%." },
-    KeyAmbrosia = {
-        id = "KeyAmbrosia",
-        name = "Ambrosia Vial",
+    KeyHelixVial = {
+        id = "KeyHelixVial",
+        name = "Helix Vial",
         category = "Key",
         width = 1, height = 1,
         stackable = false, stackMax = 1,
-        description = "Vial of Ambrosia stolen by the NSF. Recover all five.",
+        description = "Sealed Helix-Custodial sample case. Contents officially classified as a 'workplace stress mediator'. Recover all five.",
     },
     DataCube = {
         id = "DataCube",

@@ -6,8 +6,8 @@
 -- Each option's `effect` string mutates WorldState for ALL players when that
 -- option wins. Effect grammar matches Dialog.lua's effect field. Special
 -- effect kinds handled by VoteService outcome:
---   "ending:Helios" -> calls EndingService.tryTrigger("Helios") for all players
---   "flag:..." / "faction:..." / "rep:..."  -> applied per-player
+--   "ending:Lattice" -> calls EndingService.tryTrigger("Lattice") for all
+--   "flag:..." / "faction:..." / "rep:..." -> applied per-player
 
 export type VoteOption = {
     id: string,
@@ -25,76 +25,76 @@ export type VoteDef = {
 local Votes: { [string]: VoteDef } = {
 
     -- =====================================================================
-    -- Defection vote: triggered by Tracer Tong dialog.
+    -- Defection vote: triggered by Cael's dialog.
     -- =====================================================================
     defect = {
         id = "defect",
-        prompt = "Tracer Tong: \"Cut your strings from UNATCO and join the resistance — or stay loyal. The team must decide.\"",
+        prompt = "Cael (Awakened): \"Cut your contracts with AEGIS — the agency is compromised — or stay loyal. The team must decide.\"",
         timeoutSec = 30,
         options = {
             {
                 id = "defect",
-                label = "Defect — leave UNATCO",
-                effect = "flag:defected;flag:metTracerTong;faction:NSF;rep:UNATCO-50;rep:NSF+50",
+                label = "Defect — leave AEGIS",
+                effect = "flag:defected;flag:metCael;faction:IronPromise;rep:AEGIS-50;rep:IronPromise+50",
             },
             {
                 id = "loyal",
-                label = "Stay loyal to UNATCO",
-                effect = "flag:metTracerTong;rep:UNATCO+10",
+                label = "Stay loyal to AEGIS",
+                effect = "flag:metCael;rep:AEGIS+10",
             },
         },
     },
 
     -- =====================================================================
-    -- Endgame votes: one per Area 51 terminal. Whichever ending wins gets
-    -- played for every player simultaneously.
+    -- Director Cole's offer to join Helix.
     -- =====================================================================
-    endingHelios = {
-        id = "endingHelios",
-        prompt = "MERGE WITH HELIOS — vote to commit the team to this ending.",
-        timeoutSec = 25,
+    joinHelix = {
+        id = "joinHelix",
+        prompt = "Director Cole (Helix): \"Step into the role you were built for. Custodial-tier credentials. The veil becomes a tool in your hand.\"",
+        timeoutSec = 30,
         options = {
-            { id = "yes", label = "Merge with Helios", effect = "ending:Helios" },
-            { id = "no",  label = "Cancel",            effect = "" },
-        },
-    },
-    endingIlluminati = {
-        id = "endingIlluminati",
-        prompt = "RESTORE THE ILLUMINATI — vote to commit the team to this ending.",
-        timeoutSec = 25,
-        options = {
-            { id = "yes", label = "Restore Illuminati", effect = "ending:Illuminati" },
-            { id = "no",  label = "Cancel",             effect = "" },
-        },
-    },
-    endingDarkAge = {
-        id = "endingDarkAge",
-        prompt = "TRIGGER THE DARK AGE — vote to commit the team to this ending.",
-        timeoutSec = 25,
-        options = {
-            { id = "yes", label = "Trigger the Dark Age", effect = "ending:DarkAge" },
-            { id = "no",  label = "Cancel",               effect = "" },
-        },
-    },
-    endingMJ12Enforce = {
-        id = "endingMJ12Enforce",
-        prompt = "BECOME MJ12 ENFORCER — accept Walton Simons' offer. Available only after meeting Simons and accepting MJ12.",
-        timeoutSec = 25,
-        options = {
-            { id = "yes", label = "Become MJ12 Enforcer", effect = "ending:MJ12Enforce" },
-            { id = "no",  label = "Refuse",               effect = "" },
+            { id = "yes", label = "Accept — join Helix",  effect = "flag:joinedHelix;faction:Helix;rep:AEGIS-30;rep:Helix+50" },
+            { id = "no",  label = "Refuse",               effect = "rep:AEGIS+10;rep:Helix-25" },
         },
     },
 
-    -- Walton Simons' offer to join MJ12 — opens before the player ever
-    -- reaches Area 51, so the MJ12 Enforcer ending is unlocked.
-    joinMJ12 = {
-        id = "joinMJ12",
-        prompt = "Walton Simons: \"Step into the role you were built for. Join MJ12. The world will reshape itself in your image.\"",
-        timeoutSec = 30,
+    -- =====================================================================
+    -- Endgame votes: one per Vault-7 terminal.
+    -- =====================================================================
+    endingLattice = {
+        id = "endingLattice",
+        prompt = "LATTICE SYMBIOSIS — share the Lattice with humanity. The veil comes off, for everyone, at once. Vote to commit.",
+        timeoutSec = 25,
         options = {
-            { id = "yes", label = "Accept — join MJ12",  effect = "flag:joinedMJ12;faction:MJ12;rep:UNATCO-30;rep:MJ12+50" },
-            { id = "no",  label = "Refuse — UNATCO is enough", effect = "rep:UNATCO+10;rep:MJ12-25" },
+            { id = "yes", label = "Merge with the Lattice", effect = "ending:Lattice" },
+            { id = "no",  label = "Cancel",                 effect = "" },
+        },
+    },
+    endingQuorum = {
+        id = "endingQuorum",
+        prompt = "QUORUM RESTORATION — hand control to the human collaborators. Veil stays. Familiar masters in charge.",
+        timeoutSec = 25,
+        options = {
+            { id = "yes", label = "Restore the Quorum",     effect = "ending:Quorum" },
+            { id = "no",  label = "Cancel",                 effect = "" },
+        },
+    },
+    endingReset = {
+        id = "endingReset",
+        prompt = "NETWORK RESET — destroy the Lattice. Veil collapses violently; mass disorientation. Humanity is alone.",
+        timeoutSec = 25,
+        options = {
+            { id = "yes", label = "Reset the network",      effect = "ending:Reset" },
+            { id = "no",  label = "Cancel",                 effect = "" },
+        },
+    },
+    endingHelixAscension = {
+        id = "endingHelixAscension",
+        prompt = "HELIX ASCENSION — accept Director Cole's offer. Available only after meeting Cole and joining Helix.",
+        timeoutSec = 25,
+        options = {
+            { id = "yes", label = "Become a Custodian",     effect = "ending:HelixAscension" },
+            { id = "no",  label = "Refuse",                 effect = "" },
         },
     },
 }
