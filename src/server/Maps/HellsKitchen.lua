@@ -117,6 +117,12 @@ function HellsKitchen.build(folder: Folder)
     MapUtil.pickup(folder, "AmmoTranq", 10, Vector3.new(-20, 2, 40), Color3.fromRGB(180, 180, 200))
     MapUtil.pickup(folder, "Lockpick", 2, Vector3.new(45, 2, -100), Color3.fromRGB(160, 160, 160))
     MapUtil.pickup(folder, "DataCube", 1, Vector3.new(-20, 4, -140), Color3.fromRGB(0, 200, 255))
+    MapUtil.pickup(folder, "StealthPistol", 1, Vector3.new(40, 2, 40), Color3.fromRGB(40, 40, 50))
+    MapUtil.pickup(folder, "ThrowingKnife", 1, Vector3.new(-40, 2, 40), Color3.fromRGB(180, 200, 220))
+    MapUtil.pickup(folder, "AmmoKnife", 6, Vector3.new(-40, 2, 50), Color3.fromRGB(180, 200, 220))
+    MapUtil.pickup(folder, "WeaponModClip", 1, Vector3.new(0, 2, 60), Color3.fromRGB(160, 160, 160))
+    MapUtil.pickup(folder, "WeaponModLaser", 1, Vector3.new(45, 2, 0), Color3.fromRGB(255, 50, 50))
+    MapUtil.pickup(folder, "WeaponModRecoil", 1, Vector3.new(-45, 2, 0), Color3.fromRGB(140, 100, 80))
 
     MapUtil.label(folder, "Hell's Kitchen, NYC", Vector3.new(0, 30, 0),
         Color3.fromRGB(180, 220, 255))

@@ -121,6 +121,13 @@ function Area51.build(folder: Folder)
     MapUtil.pickup(folder, "GepGun", 1, Vector3.new(0, -8, -30), Color3.fromRGB(160, 80, 30))
     MapUtil.pickup(folder, "AmmoRocket", 4, Vector3.new(5, -8, -30), Color3.fromRGB(160, 80, 30))
     MapUtil.pickup(folder, "AugUpgradeCanister", 2, Vector3.new(-10, -8, -40), Color3.fromRGB(255, 100, 200))
+    MapUtil.pickup(folder, "LAM", 1, Vector3.new(10, -8, -40), Color3.fromRGB(255, 100, 80))
+    MapUtil.pickup(folder, "AmmoLAM", 4, Vector3.new(15, -8, -40), Color3.fromRGB(255, 100, 80))
+    MapUtil.pickup(folder, "PlasmaRifle", 1, Vector3.new(-25, -8, -30), Color3.fromRGB(80, 200, 255))
+    MapUtil.pickup(folder, "AmmoPlasma", 60, Vector3.new(-25, -8, -40), Color3.fromRGB(80, 200, 255))
+    MapUtil.pickup(folder, "WeaponModDamage", 2, Vector3.new(0, -8, -20), Color3.fromRGB(220, 60, 60))
+    MapUtil.pickup(folder, "WeaponModAccuracy", 1, Vector3.new(20, -8, -20), Color3.fromRGB(80, 200, 80))
+    MapUtil.pickup(folder, "WeaponModRange", 1, Vector3.new(-20, -8, -20), Color3.fromRGB(80, 160, 220))
 
     -- Transition back to UNATCO HQ
     MapUtil.transition(folder, "ToUNATCO", Vector3.new(0, 4, 115), Vector3.new(8, 8, 4), "UNATCO_HQ")

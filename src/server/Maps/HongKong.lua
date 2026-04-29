@@ -94,6 +94,12 @@ function HongKong.build(folder: Folder)
     MapUtil.pickup(folder, "AugUpgradeCanister", 1, Vector3.new(0, 2, 20), Color3.fromRGB(255, 100, 200))
     MapUtil.pickup(folder, "Multitool", 3, Vector3.new(-30, 2, 25), Color3.fromRGB(80, 200, 80))
     MapUtil.pickup(folder, "Ammo762", 60, Vector3.new(0, 2, -20), Color3.fromRGB(220, 200, 80))
+    MapUtil.pickup(folder, "PlasmaRifle", 1, Vector3.new(-30, 2, 0), Color3.fromRGB(80, 200, 255))
+    MapUtil.pickup(folder, "AmmoPlasma", 40, Vector3.new(-30, 2, 10), Color3.fromRGB(80, 200, 255))
+    MapUtil.pickup(folder, "AmmoLAM", 2, Vector3.new(30, 2, 30), Color3.fromRGB(255, 100, 80))
+    MapUtil.pickup(folder, "WeaponModRange", 1, Vector3.new(0, 2, -40), Color3.fromRGB(80, 160, 220))
+    MapUtil.pickup(folder, "WeaponModReload", 1, Vector3.new(35, 2, -50), Color3.fromRGB(220, 180, 60))
+    MapUtil.pickup(folder, "WeaponModScope", 1, Vector3.new(-35, 2, -50), Color3.fromRGB(50, 50, 60))
 
     MapUtil.label(folder, "Hong Kong - Tonnochi Road", Vector3.new(0, 90, 0),
         Color3.fromRGB(255, 100, 200))

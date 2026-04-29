@@ -30,6 +30,7 @@ local EVENT_NAMES = {
     "UseItem",
     "DropItem",
     "PickupItem",
+    "InstallWeaponMod",
     "AllocateSkill",
     "InstallAugmentation",
     "ToggleAugmentation",

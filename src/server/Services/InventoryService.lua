@@ -6,6 +6,8 @@ local Items = require(Shared.Config.Items)
 local Remotes = require(Shared.Remotes)
 local PlayerData = require(script.Parent.Parent.PlayerData)
 local Skills = require(Shared.Config.Skills)
+local Weapons = require(Shared.Config.Weapons)
+local WeaponMods = require(Shared.Config.WeaponMods)
 
 local InventoryService = {}
 
@@ -78,6 +80,50 @@ function InventoryService.use(player: Player, itemId: string)
     InventoryService.replicateStats(player)
 end
 
+-- Maps inventory mod-item ids ("WeaponModSilencer") to mod registry ids ("Silencer").
+local function modItemToModId(itemId: string): string?
+    if string.sub(itemId, 1, 9) ~= "WeaponMod" then return nil end
+    return string.sub(itemId, 10)
+end
+
+function InventoryService.installMod(player: Player, weaponItemId: string, modItemId: string): boolean
+    local weaponDef = Weapons[weaponItemId]
+    if not weaponDef then return false end
+    local modId = modItemToModId(modItemId)
+    if not modId or not WeaponMods.Mods[modId] then return false end
+    if not WeaponMods.compatible(modId, weaponDef.slot) then
+        local notify = Remotes.get("Notify") :: RemoteEvent
+        notify:FireClient(player, "Mod incompatible with this weapon.")
+        return false
+    end
+    if not InventoryService.has(player, modItemId, 1) then return false end
+
+    local data = PlayerData.get(player)
+    local stack = findStack(data, weaponItemId)
+    if not stack then return false end
+    stack.mods = stack.mods or {}
+    for _, existing in ipairs(stack.mods) do
+        if existing == modId then
+            local notify = Remotes.get("Notify") :: RemoteEvent
+            notify:FireClient(player, "Mod already installed on this weapon.")
+            return false
+        end
+    end
+    table.insert(stack.mods, modId)
+    InventoryService.remove(player, modItemId, 1)
+    InventoryService.replicate(player)
+    local notify = Remotes.get("Notify") :: RemoteEvent
+    notify:FireClient(player, weaponDef.name .. ": " .. WeaponMods.Mods[modId].name .. " installed.")
+    return true
+end
+
+function InventoryService.getStackMods(player: Player, weaponItemId: string): { string }
+    local data = PlayerData.get(player)
+    local stack = findStack(data, weaponItemId)
+    if not stack or not stack.mods then return {} end
+    return stack.mods
+end
+
 function InventoryService.equip(player: Player, itemId: string)
     if itemId ~= "" and not InventoryService.has(player, itemId, 1) then return end
     local data = PlayerData.get(player)
@@ -127,6 +173,13 @@ function InventoryService.init()
     dropEv.OnServerEvent:Connect(function(player, itemId)
         if typeof(itemId) == "string" then
             InventoryService.remove(player, itemId, 1)
+        end
+    end)
+
+    local installEv = Remotes.get("InstallWeaponMod") :: RemoteEvent
+    installEv.OnServerEvent:Connect(function(player, weaponId, modItemId)
+        if typeof(weaponId) == "string" and typeof(modItemId) == "string" then
+            InventoryService.installMod(player, weaponId, modItemId)
         end
     end)
 end

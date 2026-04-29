@@ -21,6 +21,7 @@ export type AugState = {
 export type ItemStack = {
     id: string,
     count: number,
+    mods: { string }?,         -- weapon mod ids attached to this stack (weapons only)
 }
 
 export type PlayerData = {

@@ -88,6 +88,8 @@ function LibertyIsland.build(folder: Folder)
     MapUtil.pickup(folder, "AugCanister", 1, Vector3.new(-5, 2, -40), Color3.fromRGB(255, 0, 200))
     MapUtil.pickup(folder, "Lockpick", 3, Vector3.new(8, 2, -30), Color3.fromRGB(160, 160, 160))
     MapUtil.pickup(folder, "Multitool", 3, Vector3.new(-8, 2, -30), Color3.fromRGB(80, 200, 80))
+    MapUtil.pickup(folder, "WeaponModAccuracy", 1, Vector3.new(15, 2, 80), Color3.fromRGB(80, 200, 80))
+    MapUtil.pickup(folder, "WeaponModSilencer", 1, Vector3.new(-15, 2, 80), Color3.fromRGB(40, 40, 50))
 
     -- Friendly NPCs at the dock
     MapUtil.npc(folder, "Paul Denton", Vector3.new(-8, 3, 220), "PaulDenton", Color3.fromRGB(40, 50, 90))

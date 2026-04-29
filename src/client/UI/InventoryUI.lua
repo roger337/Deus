@@ -7,6 +7,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Theme = require(script.Parent.Theme)
 local Items = require(Shared.Config.Items)
 local Weapons = require(Shared.Config.Weapons)
+local WeaponMods = require(Shared.Config.WeaponMods)
 local Remotes = require(Shared.Remotes)
 
 local InventoryUI = {}
@@ -105,7 +106,7 @@ function InventoryUI.start()
 
     local detailDesc = Instance.new("TextLabel")
     detailDesc.Position = UDim2.fromOffset(12, 40)
-    detailDesc.Size = UDim2.fromOffset(284, 200)
+    detailDesc.Size = UDim2.fromOffset(284, 160)
     detailDesc.BackgroundTransparency = 1
     detailDesc.Font = Theme.Font
     detailDesc.TextSize = 14
@@ -138,10 +139,186 @@ function InventoryUI.start()
 
     local selected: string? = nil
 
+    -- Mod sub-panel: shown when a weapon is selected. Lists installed mods
+    -- and a button to install a compatible mod from inventory.
+    local modsPanel = Instance.new("Frame")
+    modsPanel.Position = UDim2.fromOffset(12, 220)
+    modsPanel.Size = UDim2.fromOffset(284, 90)
+    modsPanel.BackgroundTransparency = 1
+    modsPanel.Visible = false
+    modsPanel.Parent = detail
+    local modsLayout = Instance.new("UIListLayout")
+    modsLayout.Padding = UDim.new(0, 2)
+    modsLayout.Parent = modsPanel
+
+    local installModBtn = Instance.new("TextButton")
+    installModBtn.Position = UDim2.fromOffset(160, 358)
+    installModBtn.Size = UDim2.fromOffset(140, 32)
+    installModBtn.Text = "INSTALL MOD"
+    styleButton(installModBtn)
+    installModBtn.Visible = false
+    installModBtn.Parent = detail
+
+    -- Modal popup for picking a compatible mod from inventory.
+    local function openModPicker(weaponId: string)
+        local wdef = Weapons[weaponId]
+        if not wdef then return end
+        local picker = Instance.new("Frame")
+        picker.AnchorPoint = Vector2.new(0.5, 0.5)
+        picker.Position = UDim2.fromScale(0.5, 0.5)
+        picker.Size = UDim2.fromOffset(320, 360)
+        picker.BackgroundColor3 = Theme.Panel
+        picker.ZIndex = 5
+        picker.Parent = sg
+        local ps = Instance.new("UIStroke")
+        ps.Color = Theme.Border
+        ps.Thickness = 1
+        ps.Parent = picker
+        local title = Instance.new("TextLabel")
+        title.Position = UDim2.fromOffset(12, 8)
+        title.Size = UDim2.fromOffset(296, 24)
+        title.BackgroundTransparency = 1
+        title.Font = Theme.Font
+        title.TextSize = 16
+        title.TextColor3 = Theme.Accent
+        title.TextXAlignment = Enum.TextXAlignment.Left
+        title.Text = "INSTALL MOD: " .. wdef.name
+        title.ZIndex = 6
+        title.Parent = picker
+
+        local listFrame = Instance.new("ScrollingFrame")
+        listFrame.Position = UDim2.fromOffset(12, 36)
+        listFrame.Size = UDim2.fromOffset(296, 280)
+        listFrame.BackgroundColor3 = Theme.Bg
+        listFrame.BorderSizePixel = 0
+        listFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+        listFrame.CanvasSize = UDim2.new()
+        listFrame.ScrollBarThickness = 4
+        listFrame.ZIndex = 6
+        listFrame.Parent = picker
+        local lay = Instance.new("UIListLayout")
+        lay.Padding = UDim.new(0, 2)
+        lay.Parent = listFrame
+
+        -- Find compatible mods present in inventory.
+        local found = false
+        for _, stack in ipairs(data.inventory) do
+            if string.sub(stack.id, 1, 9) ~= "WeaponMod" then continue end
+            local modId = string.sub(stack.id, 10)
+            if not WeaponMods.compatible(modId, wdef.slot) then continue end
+            local mod = WeaponMods.Mods[modId]
+            if not mod then continue end
+            found = true
+            local b = Instance.new("TextButton")
+            b.Size = UDim2.new(1, -4, 0, 50)
+            b.TextXAlignment = Enum.TextXAlignment.Left
+            b.Text = string.format("  %s  (x%d)\n  %s", mod.name, stack.count, mod.description)
+            b.TextWrapped = true
+            b.ZIndex = 6
+            styleButton(b)
+            b.Parent = listFrame
+            b.MouseButton1Click:Connect(function()
+                local ev = Remotes.get("InstallWeaponMod") :: RemoteEvent
+                ev:FireServer(weaponId, stack.id)
+                picker:Destroy()
+            end)
+        end
+        if not found then
+            local empty = Instance.new("TextLabel")
+            empty.Size = UDim2.fromOffset(296, 80)
+            empty.BackgroundTransparency = 1
+            empty.Font = Theme.Font
+            empty.TextSize = 14
+            empty.TextColor3 = Theme.TextDim
+            empty.TextWrapped = true
+            empty.ZIndex = 6
+            empty.Text = "No compatible mods in inventory. Look for pickups in the field — Versalife, Area 51, and the warehouses tend to have them."
+            empty.Parent = listFrame
+        end
+
+        local closeBtn = Instance.new("TextButton")
+        closeBtn.Position = UDim2.fromOffset(12, 322)
+        closeBtn.Size = UDim2.fromOffset(296, 30)
+        closeBtn.Text = "Close"
+        closeBtn.ZIndex = 6
+        styleButton(closeBtn)
+        closeBtn.Parent = picker
+        closeBtn.MouseButton1Click:Connect(function() picker:Destroy() end)
+    end
+    installModBtn.MouseButton1Click:Connect(function()
+        if selected and Weapons[selected] then
+            openModPicker(selected)
+        end
+    end)
+
+    local function findStack(itemId: string)
+        for _, s in ipairs(data.inventory) do
+            if s.id == itemId then return s end
+        end
+        return nil
+    end
+
+    local function refreshModsPanel()
+        for _, c in ipairs(modsPanel:GetChildren()) do
+            if c:IsA("TextLabel") then c:Destroy() end
+        end
+        if not selected then
+            modsPanel.Visible = false
+            installModBtn.Visible = false
+            return
+        end
+        local wdef = Weapons[selected]
+        if not wdef then
+            modsPanel.Visible = false
+            installModBtn.Visible = false
+            return
+        end
+        modsPanel.Visible = true
+        installModBtn.Visible = true
+        local title = Instance.new("TextLabel")
+        title.Size = UDim2.fromOffset(284, 18)
+        title.BackgroundTransparency = 1
+        title.Font = Theme.Font
+        title.TextSize = 13
+        title.TextColor3 = Theme.Accent
+        title.TextXAlignment = Enum.TextXAlignment.Left
+        title.Text = "INSTALLED MODS"
+        title.Parent = modsPanel
+        local stack = findStack(selected)
+        local mods = (stack and stack.mods) or {}
+        if #mods == 0 then
+            local none = Instance.new("TextLabel")
+            none.Size = UDim2.fromOffset(284, 18)
+            none.BackgroundTransparency = 1
+            none.Font = Theme.Font
+            none.TextSize = 12
+            none.TextColor3 = Theme.TextDim
+            none.TextXAlignment = Enum.TextXAlignment.Left
+            none.Text = "  (none)"
+            none.Parent = modsPanel
+        else
+            for _, modId in ipairs(mods) do
+                local mod = WeaponMods.Mods[modId]
+                if not mod then continue end
+                local lbl = Instance.new("TextLabel")
+                lbl.Size = UDim2.fromOffset(284, 16)
+                lbl.BackgroundTransparency = 1
+                lbl.Font = Theme.Font
+                lbl.TextSize = 12
+                lbl.TextColor3 = Theme.Good
+                lbl.TextXAlignment = Enum.TextXAlignment.Left
+                lbl.Text = "  + " .. mod.name
+                lbl.Parent = modsPanel
+            end
+        end
+    end
+
     local function refreshDetail()
         if not selected then
             detailName.Text = ""
             detailDesc.Text = "Select an item."
+            modsPanel.Visible = false
+            installModBtn.Visible = false
             return
         end
         local def = Items[selected]
@@ -160,6 +337,7 @@ function InventoryUI.start()
             detailName.Text = selected
             detailDesc.Text = ""
         end
+        refreshModsPanel()
     end
 
     local function refresh()

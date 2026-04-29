@@ -8,6 +8,7 @@ A condensed, playable homage to the 2000 Ion Storm classic, built for Roblox Stu
 - **Multiple solutions** — every level has lethal and non-lethal paths, locked doors that open with a lockpick OR a hack OR a key, hostile patrols you can avoid with stealth/cloak.
 - **Five iconic maps** — Liberty Island (intro), UNATCO HQ (hub), Hell's Kitchen, Hong Kong, Area 51 (endgame).
 - **Three enemy kinds** — NSF human grunts (radio chatter, ranged weapons), Security Bots (wheeled, laser, EMP-vulnerable), Spider Bots (skitter, melee zap). All share the same state machine but use different vision cones, weapons, voice keys, and visuals — see `EnemyAI.lua`.
+- **11 weapons + 9 weapon mods** — pistols, rifles, sniper, GEP gun, LAMs, throwing knives, plasma rifle, stealth pistol, riot prod, combat knife. Mods (accuracy, range, recoil, reload, clip, scope, laser, silencer, damage) attach to compatible weapons and modify effective stats at fire time.
 - **Branching dialog** — talk to Paul Denton, Anna Navarre, Dr. Reyes, Tracer Tong.
 - **Ending choice** — three terminals in Area 51 echo the three classic endings (Helios merge / Illuminati / Dark Age).
 
@@ -149,6 +150,7 @@ src/
 ## Extending
 
 - **Add a weapon:** drop a new entry in `src/shared/Config/Weapons.lua`. Spawn it in a map via `MapUtil.pickup(folder, "MyGun", 1, pos, color)`.
+- **Add a weapon mod:** entry in `src/shared/Config/WeaponMods.lua` (id, compatible slots, effects list). Add a matching `WeaponModXxx` item in `Items.lua` so it's pickup-able. The mod is automatically merged into effective weapon stats at fire time — no service edits needed unless you introduce a new field op.
 - **Add an aug:** entry in `Augmentations.lua`. If active, set `energyPerSec` and `magnitudes`; the drain loop in `AugService` handles it. For new behaviors (e.g., aim aug), read `AugService.magnitude(player, "MyAug")` from the relevant service.
 - **Add a map:** copy `Maps/HellsKitchen.lua`, change `id`/`displayName`/`spawnPoint`/`build`, register in `Maps/init.lua`, and add a `MapUtil.transition` to it from another map.
 - **Add a dialog tree:** new entry in `Dialog.lua`. Tag an NPC with `model:SetAttribute("DialogTree", "MyTree")`.

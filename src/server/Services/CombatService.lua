@@ -8,6 +8,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 
 local Weapons = require(Shared.Config.Weapons)
+local WeaponMods = require(Shared.Config.WeaponMods)
 local Remotes = require(Shared.Remotes)
 local PlayerData = require(script.Parent.Parent.PlayerData)
 local SkillService = require(script.Parent.SkillService)
@@ -40,8 +41,13 @@ function CombatService.applyDamageToHumanoid(
     headshot: boolean,
     nonLethalOnly: boolean
 )
-    local def = Weapons[weaponId]
-    if not def then return end
+    local baseDef = Weapons[weaponId]
+    if not baseDef then return end
+    local def = baseDef
+    if attacker then
+        local stackMods = InventoryService.getStackMods(attacker, weaponId)
+        def = WeaponMods.applyMods(baseDef, stackMods)
+    end
     local hum, isEnemy = isHumanoidEnemy(targetModel)
     if not hum then return end
 
@@ -51,11 +57,6 @@ function CombatService.applyDamageToHumanoid(
     end
     if headshot then
         damage *= def.headshotMult
-    end
-    -- Ballistic protection: passive damage reduction.
-    if attacker and def.ammoType ~= nil and def.ammoType ~= "Tranq" then
-        local prot = AugService.passiveMagnitude(attacker, "BallisticProtection")
-        -- (only reduces damage taken; ignore here since attacker is dealing)
     end
 
     local lethal = not (nonLethalOnly or def.id == "RiotProd" or def.id == "MiniCrossbow")
@@ -86,12 +87,16 @@ function CombatService.applyDamageToHumanoid(
 end
 
 function CombatService.tryFire(player: Player, weaponId: string, origin: Vector3, direction: Vector3, hitPos: Vector3?, hitInstance: Instance?)
-    local def = Weapons[weaponId]
-    if not def then return end
+    local baseDef = Weapons[weaponId]
+    if not baseDef then return end
     local data = PlayerData.get(player)
     if data.equipped ~= weaponId then return end
 
-    -- rate limit
+    -- Apply installed mods to produce effective stats for THIS shot.
+    local stackMods = InventoryService.getStackMods(player, weaponId)
+    local def = WeaponMods.applyMods(baseDef, stackMods)
+
+    -- rate limit (uses effective rpm in case a future mod tweaks it)
     local now = os.clock()
     local last = RECENT_FIRE[player] or 0
     local cooldown = 60 / def.rpm
