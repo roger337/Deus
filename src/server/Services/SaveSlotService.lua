@@ -67,10 +67,11 @@ function SaveSlotService.writeManifest(player: Player, slot: number)
         playedAt = os.time(),
     }
     retry(function()
-        local current = (manifestStore :: DataStore):GetAsync(tostring(player.UserId)) or {}
+        local mgr = manifestStore :: DataStore
+        local current = mgr:GetAsync(tostring(player.UserId)) or {}
         if typeof(current) ~= "table" then current = {} end
         current[tostring(slot)] = summary
-        (manifestStore :: DataStore):SetAsync(tostring(player.UserId), current)
+        mgr:SetAsync(tostring(player.UserId), current)
         return true
     end, 2)
 end
