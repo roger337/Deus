@@ -107,6 +107,10 @@ function HellsKitchen.build(folder: Folder)
     EnemyAI.run(EnemyAI.spawn(Vector3.new(0, 4, -130), "AssaultRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(-15, 4, -130), "AssaultRifle"))
 
+    -- One spider bot lurking in the warehouse — NSF patched it together
+    -- from stolen Versalife parts.
+    EnemyAI.run(EnemyAI.spawnSpiderBot(Vector3.new(15, 4, -135)))
+
     -- Pickups
     MapUtil.pickup(folder, "Medkit", 1, Vector3.new(20, 2, 70), Color3.fromRGB(255, 80, 80))
     MapUtil.pickup(folder, "MiniCrossbow", 1, Vector3.new(-20, 2, 30), Color3.fromRGB(180, 180, 200))

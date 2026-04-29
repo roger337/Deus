@@ -7,6 +7,7 @@ A condensed, playable homage to the 2000 Ion Storm classic, built for Roblox Stu
 - **Skills + augmentations + inventory** — three orthogonal progression systems, just like the original.
 - **Multiple solutions** — every level has lethal and non-lethal paths, locked doors that open with a lockpick OR a hack OR a key, hostile patrols you can avoid with stealth/cloak.
 - **Five iconic maps** — Liberty Island (intro), UNATCO HQ (hub), Hell's Kitchen, Hong Kong, Area 51 (endgame).
+- **Three enemy kinds** — NSF human grunts (radio chatter, ranged weapons), Security Bots (wheeled, laser, EMP-vulnerable), Spider Bots (skitter, melee zap). All share the same state machine but use different vision cones, weapons, voice keys, and visuals — see `EnemyAI.lua`.
 - **Branching dialog** — talk to Paul Denton, Anna Navarre, Dr. Reyes, Tracer Tong.
 - **Ending choice** — three terminals in Area 51 echo the three classic endings (Helios merge / Illuminati / Dark Age).
 

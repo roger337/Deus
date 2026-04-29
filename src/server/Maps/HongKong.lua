@@ -83,6 +83,10 @@ function HongKong.build(folder: Folder)
     EnemyAI.run(EnemyAI.spawn(Vector3.new(0, 4, -70), "AssaultRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(15, 4, -90), "Pistol10mm"))
 
+    -- Versalife security bots patrol the corporate side of the street.
+    EnemyAI.run(EnemyAI.spawnSecurityBot(Vector3.new(-30, 4, 30)))
+    EnemyAI.run(EnemyAI.spawnSpiderBot(Vector3.new(-25, 4, 50)))
+
     -- Pickups
     MapUtil.pickup(folder, "Medkit", 1, Vector3.new(-15, 2, 60), Color3.fromRGB(255, 80, 80))
     MapUtil.pickup(folder, "Biocell", 2, Vector3.new(20, 2, -40), Color3.fromRGB(80, 200, 255))

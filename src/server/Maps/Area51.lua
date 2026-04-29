@@ -100,13 +100,20 @@ function Area51.build(folder: Folder)
     endChoice("EndingIlluminati", Vector3.new(0, -8, -88), Color3.fromRGB(255, 215, 0), "Restore Illuminati")
     endChoice("EndingDarkAge", Vector3.new(20, -8, -80), Color3.fromRGB(120, 30, 30), "Trigger Dark Age")
 
-    -- MJ12 commandos and bots
+    -- MJ12 commandos
     EnemyAI.run(EnemyAI.spawn(Vector3.new(-30, 4, 50), "AssaultRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(30, 4, 50), "AssaultRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(0, 4, 80), "SniperRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(-20, -8, -50), "AssaultRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(20, -8, -50), "AssaultRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(0, -8, -70), "GepGun"))
+
+    -- Sector 4 patrol bots: two security bots topside, two spiders
+    -- guarding the underground Helios chamber.
+    EnemyAI.run(EnemyAI.spawnSecurityBot(Vector3.new(-15, 4, 20)))
+    EnemyAI.run(EnemyAI.spawnSecurityBot(Vector3.new(15, 4, 20)))
+    EnemyAI.run(EnemyAI.spawnSpiderBot(Vector3.new(-10, -8, -60)))
+    EnemyAI.run(EnemyAI.spawnSpiderBot(Vector3.new(10, -8, -60)))
 
     -- Endgame loot
     MapUtil.pickup(folder, "Biocell", 4, Vector3.new(-20, 2, 50), Color3.fromRGB(80, 200, 255))

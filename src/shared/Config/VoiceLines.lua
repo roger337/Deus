@@ -19,7 +19,8 @@ export type VoiceLine = {
     subtitle: string?,      -- nil = use the dialog node's text instead
     duration: number,       -- seconds; subtitle stays this long
     volume: number?,
-    pitch: number?,
+    pitch: number?,         -- PlaybackSpeed; <1 lower, >1 higher (Anna ~0.92)
+    prefix: string?,        -- another VoiceLine key to play first (e.g. "Radio:crackle")
 }
 
 local VoiceLines: { [string]: VoiceLine } = {
@@ -30,18 +31,21 @@ local VoiceLines: { [string]: VoiceLine } = {
          Subtitle is taken from the dialog text, so leave nil here.
          ============================================================ ]]
 
-    ["Dialog:PaulDenton:intro"]        = { assetId = "", duration = 8 },
-    ["Dialog:PaulDenton:where"]        = { assetId = "", duration = 5 },
-    ["Dialog:PaulDenton:who"]          = { assetId = "", duration = 5 },
-    ["Dialog:PaulDenton:accept"]       = { assetId = "", duration = 2 },
+    -- Paul Denton: low, calm. pitch 0.95.
+    ["Dialog:PaulDenton:intro"]        = { assetId = "", duration = 8, pitch = 0.95 },
+    ["Dialog:PaulDenton:where"]        = { assetId = "", duration = 5, pitch = 0.95 },
+    ["Dialog:PaulDenton:who"]          = { assetId = "", duration = 5, pitch = 0.95 },
+    ["Dialog:PaulDenton:accept"]       = { assetId = "", duration = 2, pitch = 0.95 },
 
-    ["Dialog:JaimeReyes:intro"]        = { assetId = "", duration = 8 },
-    ["Dialog:JaimeReyes:supplies"]     = { assetId = "", duration = 2 },
-    ["Dialog:JaimeReyes:extras"]       = { assetId = "", duration = 4 },
+    -- Dr. Reyes: neutral, warm. pitch 1.05.
+    ["Dialog:JaimeReyes:intro"]        = { assetId = "", duration = 8, pitch = 1.05 },
+    ["Dialog:JaimeReyes:supplies"]     = { assetId = "", duration = 2, pitch = 1.05 },
+    ["Dialog:JaimeReyes:extras"]       = { assetId = "", duration = 4, pitch = 1.05 },
 
-    ["Dialog:AnnaNavarre:intro"]       = { assetId = "", duration = 6 },
-    ["Dialog:AnnaNavarre:argue"]       = { assetId = "", duration = 4 },
-    ["Dialog:AnnaNavarre:leave"]       = { assetId = "", duration = 1 },
+    -- Anna Navarre: nano-aug throat, faintly robotic. pitch 0.92.
+    ["Dialog:AnnaNavarre:intro"]       = { assetId = "", duration = 6, pitch = 0.92 },
+    ["Dialog:AnnaNavarre:argue"]       = { assetId = "", duration = 4, pitch = 0.92 },
+    ["Dialog:AnnaNavarre:leave"]       = { assetId = "", duration = 1, pitch = 0.92 },
 
     --[[ ============================================================
          ENEMY BARKS — short combat callouts.
@@ -49,13 +53,38 @@ local VoiceLines: { [string]: VoiceLine } = {
          is missing/silent.
          ============================================================ ]]
 
-    ["NSF:spotted"]    = { assetId = "", subtitle = "[NSF] Hostile! Take him down!",      duration = 2.5 },
-    ["NSF:investigate"]= { assetId = "", subtitle = "[NSF] Did you hear that?",           duration = 2.5 },
-    ["NSF:lostTarget"] = { assetId = "", subtitle = "[NSF] Where'd he go?",               duration = 2.5 },
+    -- All NSF combat barks come over the radio: prefix with a brief crackle.
+    ["NSF:spotted"]    = { assetId = "", subtitle = "[NSF] Hostile! Take him down!",      duration = 2.5, prefix = "Radio:crackle" },
+    ["NSF:investigate"]= { assetId = "", subtitle = "[NSF] Did you hear that?",           duration = 2.5, prefix = "Radio:crackle" },
+    ["NSF:lostTarget"] = { assetId = "", subtitle = "[NSF] Where'd he go?",               duration = 2.5, prefix = "Radio:crackle" },
     ["NSF:reload"]     = { assetId = "", subtitle = "[NSF] Reloading!",                   duration = 1.5 },
     ["NSF:wounded"]    = { assetId = "", subtitle = "[NSF] I'm hit!",                     duration = 1.5 },
     ["NSF:death"]      = { assetId = "", subtitle = "",                                   duration = 1.5 },
     ["NSF:knockedOut"] = { assetId = "", subtitle = "",                                   duration = 1.5 },
+
+    -- Idle patrol chatter. Picked at random by EnemyAI patrol step.
+    ["NSF:idle1"]      = { assetId = "", subtitle = "[NSF] All quiet on this side.",     duration = 2.5, prefix = "Radio:crackle" },
+    ["NSF:idle2"]      = { assetId = "", subtitle = "[NSF] Anything on your end?",       duration = 2.5, prefix = "Radio:crackle" },
+    ["NSF:idle3"]      = { assetId = "", subtitle = "[NSF] Stay sharp, Denton's coming.", duration = 2.5, prefix = "Radio:crackle" },
+    ["NSF:idle4"]      = { assetId = "", subtitle = "[NSF] Copy. Holding position.",     duration = 2.5, prefix = "Radio:crackle" },
+
+    -- Radio chatter pre-cue (very short crackle, plays before NSF lines).
+    ["Radio:crackle"]  = { assetId = "", subtitle = "",                                   duration = 0.4, volume = 0.5 },
+
+    --[[ ============================================================
+         AUTONOMOUS BOTS — security bot scans, spider bot warbles.
+         Bots have a robotic pitch (0.7-0.85) and no radio prefix.
+         ============================================================ ]]
+
+    ["Bot:scan"]       = { assetId = "", subtitle = "",                                   duration = 1.5, pitch = 0.7 },
+    ["Bot:alert"]      = { assetId = "", subtitle = "[BOT] HOSTILE DETECTED.",            duration = 2,   pitch = 0.7 },
+    ["Bot:firing"]     = { assetId = "", subtitle = "",                                   duration = 0.4, pitch = 0.7 },
+    ["Bot:lost"]       = { assetId = "", subtitle = "[BOT] TARGET LOST. RESUMING PATROL.", duration = 2.5, pitch = 0.7 },
+    ["Bot:disabled"]   = { assetId = "", subtitle = "[BOT] CRITICAL FAILURE.",            duration = 1.5, pitch = 0.7 },
+    ["Bot:emp"]        = { assetId = "", subtitle = "",                                   duration = 0.5, pitch = 0.6 },
+
+    ["Spider:warble"]  = { assetId = "", subtitle = "",                                   duration = 1.0, pitch = 1.4 },
+    ["Spider:strike"]  = { assetId = "", subtitle = "",                                   duration = 0.5, pitch = 1.4 },
 
     --[[ ============================================================
          MISSION / SYSTEM CUES — global, non-positional.

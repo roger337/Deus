@@ -143,6 +143,18 @@ function VoiceController.start()
         local key = payload.voiceKey
         local line = VoiceLines[key]
         if not line then return end
+
+        -- Optional prefix (e.g. radio crackle). Play it inline; the main line
+        -- follows after the prefix's `duration`. For the silent fallback we
+        -- still respect timing so subtitle ordering matches voiced playback.
+        if line.prefix then
+            local prefixLine = VoiceLines[line.prefix]
+            if prefixLine then
+                playSound(prefixLine, payload.position)
+                task.wait(prefixLine.duration or 0.4)
+            end
+        end
+
         playSound(line, payload.position)
         local sub = resolveSubtitle(key, line)
         if sub and sub ~= "" then

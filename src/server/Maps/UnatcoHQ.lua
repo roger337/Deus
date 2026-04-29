@@ -90,6 +90,13 @@ function UnatcoHQ.build(folder: Folder)
 
     MapUtil.transition(folder, "ToArea51", Vector3.new(25, 4, 35), Vector3.new(6, 8, 4), "Area51")
     MapUtil.label(folder, "Area 51", Vector3.new(25, 9, 35))
+
+    -- UNATCO security: a friendly bot in the lobby. Faction is overridden
+    -- to "UNATCO" so it never counts toward the player's kill count, and
+    -- we don't call EnemyAI.run so it stays inert.
+    local EnemyAI = require(script.Parent.Parent.EnemyAI)
+    local lobbyBot = EnemyAI.spawnSecurityBot(Vector3.new(0, 4, 20))
+    lobbyBot:SetAttribute("Faction", "UNATCO")
 end
 
 return UnatcoHQ
