@@ -108,6 +108,23 @@ function Vault7.build(folder: Folder)
     endChoice("EndingHelixAscension", "HelixAscension", "endingHelixAscension",
         Vector3.new(30, -8, -80), Color3.fromRGB(60, 30, 30), "Helix Ascension")
 
+    -- The fifth path: a plain door at the back of the chamber. Touching it
+    -- opens the Faith vote — refuse all four consoles, walk out, ascend
+    -- without their tools. Visually unassuming (the others glow; this is
+    -- just a frame).
+    local exit = MapUtil.part(folder, {
+        Name = "FaithExit",
+        Size = Vector3.new(6, 8, 0.5),
+        Position = Vector3.new(0, -6, -100),
+        Color = Color3.fromRGB(240, 240, 200),
+        Material = Enum.Material.SmoothPlastic,
+    })
+    exit:SetAttribute("InteractionType", "EndingDirect")
+    exit:SetAttribute("EndingId", "AscensionByFaith")
+    exit:SetAttribute("EndingVote", "endingFaith")
+    MapUtil.label(folder, "Walk Out  (Ascension by Faith)",
+        Vector3.new(0, -1, -100), Color3.fromRGB(240, 240, 200))
+
     -- Helix custodian troopers + bots
     EnemyAI.run(EnemyAI.spawn(Vector3.new(-30, 4, 50), "AssaultRifle"))
     EnemyAI.run(EnemyAI.spawn(Vector3.new(30, 4, 50), "AssaultRifle"))

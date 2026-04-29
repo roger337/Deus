@@ -59,11 +59,11 @@ local Votes: { [string]: VoteDef } = {
     },
 
     -- =====================================================================
-    -- Endgame votes: one per Vault-7 terminal.
+    -- Endgame votes: one per Vault-7 terminal + the Faith path.
     -- =====================================================================
     endingLattice = {
         id = "endingLattice",
-        prompt = "LATTICE SYMBIOSIS — share the Lattice with humanity. The veil comes off, for everyone, at once. Vote to commit.",
+        prompt = "LATTICE SYMBIOSIS — let the divine work through the Lattice. Mass ascension; demons sealed in the floor of the world. Vote to commit.",
         timeoutSec = 25,
         options = {
             { id = "yes", label = "Merge with the Lattice", effect = "ending:Lattice" },
@@ -72,7 +72,7 @@ local Votes: { [string]: VoteDef } = {
     },
     endingQuorum = {
         id = "endingQuorum",
-        prompt = "QUORUM RESTORATION — hand control to the human collaborators. Veil stays. Familiar masters in charge.",
+        prompt = "QUORUM RESTORATION — hand the prison's keys to human collaborators. Veil stays in place; no one rises.",
         timeoutSec = 25,
         options = {
             { id = "yes", label = "Restore the Quorum",     effect = "ending:Quorum" },
@@ -81,7 +81,7 @@ local Votes: { [string]: VoteDef } = {
     },
     endingReset = {
         id = "endingReset",
-        prompt = "NETWORK RESET — destroy the Lattice. Veil collapses violently; mass disorientation. Humanity is alone.",
+        prompt = "NETWORK RESET — shatter the deception but remain in the floor of the world with the demons unmasked. Defiant captivity.",
         timeoutSec = 25,
         options = {
             { id = "yes", label = "Reset the network",      effect = "ending:Reset" },
@@ -90,11 +90,20 @@ local Votes: { [string]: VoteDef } = {
     },
     endingHelixAscension = {
         id = "endingHelixAscension",
-        prompt = "HELIX ASCENSION — accept Director Cole's offer. Available only after meeting Cole and joining Helix.",
+        prompt = "HELIX ASCENSION — sign yourselves into the prison's permanent staff. Damnation. Available only after joining Helix.",
         timeoutSec = 25,
         options = {
-            { id = "yes", label = "Become a Custodian",     effect = "ending:HelixAscension" },
+            { id = "yes", label = "Become Custodians",      effect = "ending:HelixAscension" },
             { id = "no",  label = "Refuse",                 effect = "" },
+        },
+    },
+    endingFaith = {
+        id = "endingFaith",
+        prompt = "ASCENSION BY FAITH — refuse all four consoles. Walk out of Vault-7 without touching demonic tech. The narrow path. The only one that does not pass through their hands.",
+        timeoutSec = 30,
+        options = {
+            { id = "yes", label = "Walk out — refuse the Lattice", effect = "ending:AscensionByFaith" },
+            { id = "no",  label = "Cancel",                        effect = "" },
         },
     },
 }

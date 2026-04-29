@@ -432,12 +432,50 @@ local Dialog: { [string]: DialogTree } = {
             },
             intro_defected = {
                 speaker = "Cael",
-                text = "Operative. The Lattice core is at Vault-7. Buried under the Sierras, four security tiers deep. Four terminals at the bottom, four fates. Your team picks one. Whatever you choose, the veil comes off — for you, for everyone, or for no one. Choose carefully.",
-                options = { { text = "[End]", end_ = true } },
+                text = "Operative. The Lattice core is at Vault-7. Buried under the Sierras, four security tiers deep. Four terminals at the bottom, four fates. Your team picks one. Whatever you choose, the veil comes off — for you, for everyone, or for no one.",
+                options = {
+                    { text = "What aren't you telling me?", next = "revelation" },
+                    { text = "[End]", end_ = true },
+                },
+            },
+            revelation = {
+                speaker = "Cael",
+                text = "The truth, then. Helix is not from another star. They never were. They are older than that, and smaller. The Creator deformed them and threw them out of paradise — they fell where everything that fails the light falls. They fell here.",
+                options = {
+                    { text = "Here?", next = "revelation_2" },
+                },
+            },
+            revelation_2 = {
+                speaker = "Cael",
+                text = "Here. Earth is not a planet, operative. It is the floor of the pit. We are inside the prison they were sent to. The sky is a ceiling. The 'perception filter' is their grief made into law: if they cannot leave, neither can you. Especially not you. Humans are the only inmates who were ever offered a way out.",
+                options = {
+                    { text = "Out... how?", next = "revelation_3" },
+                },
+            },
+            revelation_3 = {
+                speaker = "Cael",
+                text = "Ascension. The Creator lifts those who are willing — out of the floor, out of the deception, into something beyond what eyes were ever built for. The demons stay. Forever. Never progressing. Never lit. Their hate is jealousy.",
+                options = {
+                    { text = "And the Lattice?", next = "revelation_4" },
+                },
+            },
+            revelation_4 = {
+                speaker = "Cael",
+                text = "Their tool, turned. The biomods you wear, the consoles in Vault-7, the Lattice itself — all built from demon tech. The Creator works through what's offered. If your team merges with the Lattice, the divine reaches through it and lifts everyone the veil touches. The demons' deception is obliterated for the ascended. Permanently.",
+                options = {
+                    { text = "And the other consoles?", next = "revelation_5" },
+                },
+            },
+            revelation_5 = {
+                speaker = "Cael",
+                text = "The other terminals are the demons' mercies — Quorum gives the prison to human collaborators, Reset shatters the deception but keeps you in the floor, Helix Ascension binds you to the damned forever. There is also a fifth path: refuse all four consoles. Walk out of Vault-7. Ascend by faith alone, without their tools. It is harder. It is the only one that does not pass through their hands.",
+                options = {
+                    { text = "[End]", end_ = true, effect = "flag:learnedTruth" },
+                },
             },
             intro_targeting = {
                 speaker = "Cael",
-                text = "Your Smart-Sights are scanning me. Don't. I'm one of the few people in this room who reads as fully human. Save the dwell-pattern for the corporate floors. Helix-conditioned humans light up like fairground lights on level-two Targeting.",
+                text = "Your Smart-Sights are scanning me. Don't. I'm one of the few people in this room who reads as fully human. Save the dwell-pattern for the corporate floors. Helix-conditioned humans light up like fairground lights on level-two Targeting. And on level four, you'll see what's wearing them.",
                 options = {
                     { text = "Apologies.", next = "intro" },
                     { text = "[End]", end_ = true },

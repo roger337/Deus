@@ -75,6 +75,7 @@ function InteractionController.start()
                 if target:GetAttribute("Locked") then text = "[E] Lockpick door"
                 else text = "[E] Open door" end
             elseif kind == "Hack" then text = "[E] Hack terminal"
+            elseif kind == "EndingDirect" then text = "[E] Walk out"
             elseif kind == "MedBot" then text = "[E] Use Med Bot"
             elseif kind == "Transition" then text = "[E] Travel" end
             label.Text = text

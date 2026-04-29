@@ -72,6 +72,14 @@ function InteractionService.handleInteraction(player: Player, target: Instance)
     elseif kind == "Hack" then
         local ev = Remotes.get("AttemptHack") :: RemoteEvent
         ev:FireClient(player, target, target:GetAttribute("HackDifficulty") or 1)
+    elseif kind == "EndingDirect" then
+        -- Used by the Faith path exit door: no minigame, no consumables;
+        -- the act of choosing IS the gameplay. Open the configured ending
+        -- vote and let the team decide.
+        local voteId = target:GetAttribute("EndingVote")
+        if typeof(voteId) == "string" then
+            VoteService.open(voteId)
+        end
     elseif kind == "Vendor" then
         local vendorId = target:GetAttribute("VendorId")
         if typeof(vendorId) == "string" then

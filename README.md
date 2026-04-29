@@ -4,9 +4,11 @@ A condensed, playable single-narrative-arc game built for Roblox Studio with [Ro
 
 ## Premise
 
-Helix is a galactic custodial bureau that has quietly "managed" Earth for centuries. Its primary tool is a global perception filter that shapes what humans see — and what humans *want* to see. AEGIS is Earth's covert defense agency; most of its operatives believe they're fighting an alien threat, not realizing the agency itself has been infiltrated. The Awakened are humans who've pierced the veil and are working to expose Helix.
+Helix appears to be a galactic custodial bureau that has quietly "managed" Earth for centuries. Its primary tool is a global perception filter that shapes what humans see — and what humans *want* to see. AEGIS is Earth's covert defense agency; most of its operatives believe they're fighting an alien threat, not realizing the agency itself has been infiltrated. The Awakened are humans who've pierced the veil and are working to expose Helix.
 
-You play an AEGIS contract operative with reverse-engineered biomod implants. The biomods enhance you, but they also *reveal* — they're the only known human-deployable tech that can punch through Helix's perception filter. Run Refraction Veil and you become something the filter can't render. Run Smart-Sights and you start to notice which humans around you aren't quite human anymore.
+You play an AEGIS contract operative with reverse-engineered biomod implants. The biomods enhance you, but they also *reveal* — they're the only known human-deployable tech that can punch through the filter. Run Refraction Veil and you become something the filter can't render. Run Smart-Sights and you notice which humans around you aren't quite human anymore.
+
+**Late-game twist (spoilers):** the Awakened cell leader Cael delivers a revelation in Vault-7. Helix isn't from another star — they're older and smaller. They were deformed, exiled by the Creator, and fell to the prison they now run. Earth isn't a planet; it's the floor of the pit. The "perception filter" is the demons' jealousy made into law: if they cannot leave, neither can you. Humans were the only inmates ever offered a way out — ascension. The biomods are demonic tech turned against its makers. Five endings reflect five answers to what to do with that knowledge.
 
 ## Pillars
 
@@ -17,7 +19,7 @@ You play an AEGIS contract operative with reverse-engineered biomod implants. Th
 - **Five maps** — Bayfront District (intro), AEGIS Tower (hub), Hardline District, Pacific Anchor (free-port), Vault-7 (Sierras endgame).
 - **Three enemy kinds** — human grunts, Security Bots (wheeled lasers, EMP-vulnerable), Spider Bots (skitter, melee zap).
 - **11 weapons + 9 weapon mods** — stealth pistol, marksman rifle, plasma rifle, sticky charges, throwing blades, etc. Mods (accuracy, range, recoil, reload, clip, scope, laser, silencer, damage) attach per-weapon.
-- **Four endings** — Lattice Symbiosis, Quorum Restoration, Network Reset, Helix Ascension. Lattice is locked at 3+ civilian deaths; Helix Ascension requires accepting Director Cole's offer.
+- **Five endings** — Lattice Symbiosis (mass ascension), Quorum Restoration (continued captivity), Network Reset (defiant captivity), Helix Ascension (damnation), Ascension by Faith (refuse all four consoles, walk out). Lattice locks at 3+ civilian deaths; Helix Ascension requires accepting Director Cole's offer; Faith is unavailable to those who joined Helix.
 - **Faction-specific vendors** — AEGIS Quartermaster, Awakened Armorer, Helix Quartermaster. Each gates on faction/flags.
 - **Three save slots per user** — pick on join. Replay routes without erasing prior runs.
 - **Branching dialog** — `WorldState` tracks faction, reputation, flags ("defected", "killedVega", "joinedHelix"), counters ("kills", "civiliansKilled"). Dialog gates on a small predicate DSL.
