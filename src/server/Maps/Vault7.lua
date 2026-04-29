@@ -13,16 +13,17 @@ Vault7.displayName = "Vault-7 (Sierras)"
 Vault7.spawnPoint = Vector3.new(0, 4, 100)
 
 -- Deep emergency-red ambient. The endgame chamber should feel like the
--- floor of the world.
+-- floor of the world — but the player still needs to see the consoles
+-- and the exit, so brightness is kept playable and fog isn't pea-soup.
 Vault7.ambient = {
     lighting = {
-        Ambient        = Color3.fromRGB(50, 20, 20),
-        OutdoorAmbient = Color3.fromRGB(80, 40, 40),
-        Brightness     = 1.5,
+        Ambient        = Color3.fromRGB(50, 25, 25),
+        OutdoorAmbient = Color3.fromRGB(70, 35, 35),
+        Brightness     = 0.8,
         ClockTime      = 22,
-        FogColor       = Color3.fromRGB(60, 20, 20),
-        FogStart       = 30,
-        FogEnd         = 200,
+        FogColor       = Color3.fromRGB(40, 15, 15),
+        FogStart       = 100,
+        FogEnd         = 500,
     },
     music = "",
 }

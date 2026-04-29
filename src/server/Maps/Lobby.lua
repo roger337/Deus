@@ -16,18 +16,19 @@ Lobby.id = "Lobby"
 Lobby.displayName = "Lobby"
 Lobby.spawnPoint = Vector3.new(0, 4, 0)
 
--- Warmer civic-atrium feel for the lobby: brighter ambient, amber fog,
--- midday clock. Music is a placeholder — drop in a `rbxassetid://NUMBER`
--- for an audio asset you own to enable it. Empty string = silence.
+-- Late-afternoon civic atrium: warm but not blinding. Brightness/clock/fog
+-- tuned so the kiosks and terminals across the lobby are clearly visible.
+-- Music is a placeholder — drop in a `rbxassetid://NUMBER` for an audio
+-- asset you own to enable it. Empty string = silence.
 Lobby.ambient = {
     lighting = {
-        Ambient        = Color3.fromRGB(70, 60, 50),
-        OutdoorAmbient = Color3.fromRGB(120, 100, 80),
-        Brightness     = 2.5,
-        ClockTime      = 12,
-        FogColor       = Color3.fromRGB(180, 160, 130),
-        FogStart       = 60,
-        FogEnd         = 400,
+        Ambient        = Color3.fromRGB(60, 55, 50),
+        OutdoorAmbient = Color3.fromRGB(90, 80, 70),
+        Brightness     = 1.5,
+        ClockTime      = 16,
+        FogColor       = Color3.fromRGB(40, 35, 30),
+        FogStart       = 200,
+        FogEnd         = 800,
     },
     music = "",  -- e.g. "rbxassetid://123456789"
 }

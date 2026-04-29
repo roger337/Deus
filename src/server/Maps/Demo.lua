@@ -16,16 +16,17 @@ Demo.id = "Demo"
 Demo.displayName = "Demo Range"
 Demo.spawnPoint = Vector3.new(0, 4, 60)
 
--- Sterile fluorescent-lit training-room feel.
+-- Sterile cool-gray training-room feel. Moderate brightness so dummy
+-- targets read clearly without washing the geometry out.
 Demo.ambient = {
     lighting = {
-        Ambient        = Color3.fromRGB(80, 90, 100),
-        OutdoorAmbient = Color3.fromRGB(150, 160, 170),
-        Brightness     = 2.5,
+        Ambient        = Color3.fromRGB(70, 75, 80),
+        OutdoorAmbient = Color3.fromRGB(100, 110, 120),
+        Brightness     = 1.5,
         ClockTime      = 14,
-        FogColor       = Color3.fromRGB(180, 190, 200),
-        FogStart       = 100,
-        FogEnd         = 600,
+        FogColor       = Color3.fromRGB(60, 65, 70),
+        FogStart       = 200,
+        FogEnd         = 800,
     },
     music = "",
 }
