@@ -14,6 +14,7 @@ local SkillService = require(script.Parent.SkillService)
 local VoiceService = require(script.Parent.VoiceService)
 local EndingService = require(script.Parent.EndingService)
 local VoteService = require(script.Parent.VoteService)
+local VendorService = require(script.Parent.VendorService)
 
 local InteractionService = {}
 
@@ -71,6 +72,11 @@ function InteractionService.handleInteraction(player: Player, target: Instance)
     elseif kind == "Hack" then
         local ev = Remotes.get("AttemptHack") :: RemoteEvent
         ev:FireClient(player, target, target:GetAttribute("HackDifficulty") or 1)
+    elseif kind == "Vendor" then
+        local vendorId = target:GetAttribute("VendorId")
+        if typeof(vendorId) == "string" then
+            VendorService.openFor(player, vendorId)
+        end
     end
 end
 

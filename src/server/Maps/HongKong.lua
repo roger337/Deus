@@ -79,8 +79,11 @@ function HongKong.build(folder: Folder)
 
     -- Hong Kong civilians.
     MapUtil.civilian(folder, "Hawker", Vector3.new(40, 3, -30))
-    MapUtil.civilian(folder, "Vendor", Vector3.new(-40, 3, -30))
     MapUtil.civilian(folder, "Pedestrian", Vector3.new(0, 3, 60))
+
+    -- NSF armorer in Tracer Tong's clinic. Refuses UNATCO loyalists.
+    MapUtil.vendor(folder, "NSF Armorer", Vector3.new(40, 3, -45), "NSF_QM",
+        Color3.fromRGB(80, 30, 30))
 
     -- MJ12 commandos
     EnemyAI.run(EnemyAI.spawn(Vector3.new(-20, 4, 0), "AssaultRifle"))

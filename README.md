@@ -12,7 +12,9 @@ A condensed, playable homage to the 2000 Ion Storm classic, built for Roblox Stu
 - **Three enemy kinds** — NSF human grunts (radio chatter, ranged weapons), Security Bots (wheeled, laser, EMP-vulnerable), Spider Bots (skitter, melee zap). All share the same state machine but use different vision cones, weapons, voice keys, and visuals — see `EnemyAI.lua`.
 - **11 weapons + 9 weapon mods** — pistols, rifles, sniper, GEP gun, LAMs, throwing knives, plasma rifle, stealth pistol, riot prod, combat knife. Mods (accuracy, range, recoil, reload, clip, scope, laser, silencer, damage) attach to compatible weapons and modify effective stats at fire time.
 - **Branching dialog** — talk to Paul Denton, Anna Navarre, Dr. Reyes, Tracer Tong.
-- **Ending choice** — three terminals in Area 51 (Helios merge / Illuminati / Dark Age). The Helios merge is locked if you've killed 3+ civilians during the run.
+- **Ending choice** — four terminals in Area 51 (Helios merge / Illuminati / Dark Age / MJ12 Enforcer). The Helios merge is locked if you've killed 3+ civilians; the MJ12 Enforcer ending requires accepting Walton Simons' offer earlier in the campaign.
+- **Faction-specific vendors** — UNATCO Quartermaster (UNATCO HQ, standard issue), NSF Armorer (Tong's clinic, stealth gear), MJ12 Quartermaster (Area 51, exotic). Each gates on faction/flags and refuses the wrong allegiance.
+- **Three save slots per user** — pick on join. Each slot holds independent inventory, augs, skills, faction, flags, counters. Replay routes without erasing old saves.
 - **Branching narrative** — `WorldState` tracks faction, reputation, flags ("defected", "killedAnna"), and counters ("civiliansKilled"). Dialog trees gate options/intros via a small predicate DSL (`flag:defected`, `counter:civiliansKilled<3`, `faction:NSF`). Tracer Tong gives a player-choice defection moment in Hong Kong; defecting closes UNATCO HQ as a transition target. Paul Denton has 5 greeting variants depending on your behavior. Anna Navarre can be confronted and made hostile (or spared) — Paul reacts later.
 
 ## Co-op model
@@ -40,6 +42,8 @@ Predicate DSL (used in `Dialog.lua`'s `requires` and per-tree `selectStart`):
 | `faction:NSF` / `!faction:UNATCO` | current faction |
 | `counter:kills>=10` (`>`, `<`, `<=`, `==`) | counter comparison |
 | `rep:UNATCO<0` | reputation comparison |
+| `aug:Cloak` / `!aug:Cloak` | augmentation installed (any level) |
+| `aug:Cloak>=3` | aug installed at level 3+ |
 | `;` | AND clauses inside a single predicate |
 | `\|` | OR clauses across whole predicate |
 
@@ -195,3 +199,7 @@ src/
 - **Add a map:** copy `Maps/HellsKitchen.lua`, change `id`/`displayName`/`spawnPoint`/`build`, register in `Maps/init.lua`, and add a `MapUtil.transition` to it from another map.
 - **Add a dialog tree:** new entry in `Dialog.lua`. Tag an NPC with `model:SetAttribute("DialogTree", "MyTree")`.
 - **Add an objective:** entry in `Objectives.lua`; call `MissionService.start(player, id)` and `MissionService.advance(player, id)` from wherever the trigger lives.
+- **Add a vendor:** entry in `Vendors.lua` (id, faction, gate predicate, stock list with prices). Spawn the NPC with `MapUtil.vendor(folder, "NameOnTag", pos, "VendorId")`.
+- **Add an ending:** entry in `EndingService.Endings` (color, eligibility predicate, paragraphs). Add a corresponding vote in `Votes.lua` and an Area 51 console with `EndingId = "..."`.
+- **React to augs in dialog:** add a `selectStart` variant `{ when = "aug:Cloak>=3", node = "intro_cloak" }` to any dialog tree.
+- **Add a save slot summary field:** edit `SaveSlotService.writeManifest` to include the field; the SlotSelectUI auto-displays whatever's in the manifest table.

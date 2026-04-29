@@ -52,6 +52,11 @@ local EVENT_NAMES = {
     "CastVote",
     "VoteUpdate",
     "CloseVote",
+    "OpenVendor",
+    "BuyItem",
+    "CloseVendor",
+    "SelectSaveSlot",
+    "ShowSlotSelect",
 }
 
 local FUNCTION_NAMES = {

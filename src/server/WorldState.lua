@@ -11,7 +11,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 
 local Remotes = require(Shared.Remotes)
 
-export type Faction = "UNATCO" | "NSF" | "Lone"
+export type Faction = "UNATCO" | "NSF" | "MJ12" | "Lone"
 
 export type WorldState = {
     userId: number,
@@ -36,13 +36,17 @@ local function defaults(userId: number): WorldState
         },
         flags = {
             defected = false,
+            joinedMJ12 = false,
             metTracerTong = false,
+            metWaltonSimons = false,
             killedAnna = false,
             sparedAnna = false,
+            killedSimons = false,
             recoveredAllAmbrosia = false,
             chosenHelios = false,
             chosenIlluminati = false,
             chosenDarkAge = false,
+            chosenMJ12Enforce = false,
             heliosLocked = false,
         },
         counters = {
@@ -127,7 +131,16 @@ end
 --    rep:F>=N / <N / >N     -> state.reputation[F] compared to N
 -- =========================================================================
 
-local function parseClause(state: WorldState, clause: string): boolean
+-- Lazy import to avoid circular: WorldState <-> PlayerData.
+local _PlayerData = nil
+local function getPlayerData()
+    if not _PlayerData then
+        _PlayerData = require(script.Parent.PlayerData)
+    end
+    return _PlayerData
+end
+
+local function parseClause(state: WorldState, clause: string, player: Player?): boolean
     clause = clause:match("^%s*(.-)%s*$")
     if clause == "" then return true end
 
@@ -145,6 +158,38 @@ local function parseClause(state: WorldState, clause: string): boolean
         result = state.flags[body] == true
     elseif kind == "faction" then
         result = state.faction == body
+    elseif kind == "aug" and player then
+        -- "aug:Cloak"        -> installed at any level
+        -- "aug:Cloak>=3"     -> installed at level >= 3
+        -- "aug:!Cloak"       -> not installed (handled via the outer ! negate)
+        local data = getPlayerData().get(player)
+        local augField, op, num = body:match("^([%w_]+)%s*(>=?|<=?|==)%s*(%d+)$")
+        if not augField then
+            for _, oprx in ipairs({ ">=", "<=", "==", ">", "<" }) do
+                local i = body:find(oprx, 1, true)
+                if i then
+                    augField = body:sub(1, i - 1):match("^%s*(.-)%s*$")
+                    op = oprx
+                    num = body:sub(i + #oprx):match("^%s*(.-)%s*$")
+                    break
+                end
+            end
+        end
+        local augId = augField or body
+        local augState = data.augs[augId]
+        if augState and augState.installed then
+            if op and num then
+                local n = tonumber(num) or 0
+                if op == ">=" then result = augState.level >= n
+                elseif op == "<=" then result = augState.level <= n
+                elseif op == "==" then result = augState.level == n
+                elseif op == ">"  then result = augState.level > n
+                elseif op == "<"  then result = augState.level < n
+                end
+            else
+                result = true
+            end
+        end
     elseif kind == "counter" or kind == "rep" then
         local field, op, num = body:match("^([%w_]+)%s*(>=?|<=?|==)%s*(%-?%d+)$")
         if not field then
@@ -186,7 +231,7 @@ function module.evaluate(player: Player, expr: string?): boolean
         -- Each OR clause is an AND of clauses split on ";"
         local allTrue = true
         for andClause in string.gmatch(orClause, "[^;]+") do
-            if not parseClause(state, andClause) then
+            if not parseClause(state, andClause, player) then
                 allTrue = false
                 break
             end

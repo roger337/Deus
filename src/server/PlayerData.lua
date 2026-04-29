@@ -26,11 +26,13 @@ export type ItemStack = {
 
 export type PlayerData = {
     userId: number,
+    saveSlot: number,
     health: number,
     maxHealth: number,
     energy: number,
     maxEnergy: number,
     skillPoints: number,
+    credits: number,
     skills: { [string]: SkillState },
     augs: { [string]: AugState },
     inventory: { ItemStack },
@@ -57,11 +59,13 @@ local function defaultData(userId: number): PlayerData
     end
     return {
         userId = userId,
+        saveSlot = 1,
         health = 100,
         maxHealth = 100,
         energy = 100,
         maxEnergy = 100,
         skillPoints = 5000,
+        credits = 500,
         skills = skills,
         augs = augStates,
         inventory = {

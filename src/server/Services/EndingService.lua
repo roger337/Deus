@@ -67,6 +67,21 @@ local Endings: { [string]: EndingDef } = {
         },
         voiceKey = "Ending:DarkAge",
     },
+    MJ12Enforce = {
+        id = "MJ12Enforce",
+        title = "BECOME THE MJ12 ENFORCER",
+        color = { 60, 30, 30 },
+        eligible = "flag:joinedMJ12",
+        blockedReason = "Walton Simons has not extended his offer. This ending is not available.",
+        epilogue = {
+            "Walton Simons greets JC at the Sector 4 elevator with a thin smile. \"Welcome to MJ12, Agent Denton. We have... use for someone of your caliber.\"",
+            "JC's nano-augs are reflashed with MJ12 master keys. Helios is partitioned, leashed, and made to serve.",
+            "Order is restored from above. Dissidents disappear quietly. UNATCO becomes the public face; MJ12 stays in the shadows where it has always belonged.",
+            "JC Denton tells himself the world is safer this way. Most nights, he believes it.",
+            "[ENDING: MJ12 ENFORCER]",
+        },
+        voiceKey = "Ending:MJ12Enforce",
+    },
 }
 
 EndingService.Endings = Endings

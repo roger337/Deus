@@ -11,7 +11,7 @@ Remotes.initServer()
 
 local PlayerData = require(script.PlayerData)
 local WorldState = require(script.WorldState)
-local DataStoreService = require(script.Services.DataStoreService)
+local SaveSlotService = require(script.Services.SaveSlotService)
 local InventoryService = require(script.Services.InventoryService)
 local SkillService = require(script.Services.SkillService)
 local AugService = require(script.Services.AugService)
@@ -20,6 +20,7 @@ local DialogService = require(script.Services.DialogService)
 local InteractionService = require(script.Services.InteractionService)
 local MissionService = require(script.Services.MissionService)
 local VoteService = require(script.Services.VoteService)
+local VendorService = require(script.Services.VendorService)
 local EnemyAI = require(script.EnemyAI)
 local LevelManager = require(script.LevelManager)
 
@@ -30,6 +31,8 @@ CombatService.init()
 DialogService.init()
 InteractionService.init()
 VoteService.init()
+VendorService.init()
+SaveSlotService.init()
 
 -- =========================================================================
 -- Dialog effect handlers. Declarative effects in Dialog.lua (`hostile:Anna`)
@@ -87,7 +90,10 @@ end
 local function onPlayerAdded(player: Player)
     PlayerData.get(player)
     WorldState.get(player)
-    DataStoreService.load(player)
+    -- Show slot picker first; until they pick we still spawn them in the
+    -- current map (they're playable but haven't restored a save). Once they
+    -- pick, applySlot replaces both PlayerData and WorldState for the slot.
+    SaveSlotService.showPicker(player)
 
     player.CharacterAdded:Connect(function(char)
         local hum = char:WaitForChild("Humanoid") :: Humanoid
@@ -119,7 +125,7 @@ local function onPlayerAdded(player: Player)
 end
 
 local function onPlayerRemoving(player: Player)
-    DataStoreService.save(player)
+    SaveSlotService.saveSlot(player)
     PlayerData.clear(player)
     WorldState.clear(player)
 end
@@ -129,11 +135,11 @@ Players.PlayerRemoving:Connect(onPlayerRemoving)
 
 game:BindToClose(function()
     for _, player in ipairs(Players:GetPlayers()) do
-        DataStoreService.save(player)
+        SaveSlotService.saveSlot(player)
     end
 end)
 
 LevelManager.init()
-DataStoreService.bindAutoSave(120)
+SaveSlotService.bindAutoSave(120)
 
 print("[DeusEx] Server ready. Map:", LevelManager.currentMap())

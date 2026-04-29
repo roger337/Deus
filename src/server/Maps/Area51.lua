@@ -96,9 +96,10 @@ function Area51.build(folder: Folder)
         p:SetAttribute("EndingId", endingId)
         MapUtil.label(folder, label, pos + Vector3.new(0, 5, 0), color)
     end
-    endChoice("EndingHelios", "Helios", Vector3.new(-20, -8, -80), Color3.fromRGB(150, 200, 255), "Merge with Helios")
-    endChoice("EndingIlluminati", "Illuminati", Vector3.new(0, -8, -88), Color3.fromRGB(255, 215, 0), "Restore Illuminati")
-    endChoice("EndingDarkAge", "DarkAge", Vector3.new(20, -8, -80), Color3.fromRGB(120, 30, 30), "Trigger Dark Age")
+    endChoice("EndingHelios", "Helios", Vector3.new(-30, -8, -80), Color3.fromRGB(150, 200, 255), "Merge with Helios")
+    endChoice("EndingIlluminati", "Illuminati", Vector3.new(-10, -8, -88), Color3.fromRGB(255, 215, 0), "Restore Illuminati")
+    endChoice("EndingDarkAge", "DarkAge", Vector3.new(10, -8, -88), Color3.fromRGB(120, 30, 30), "Trigger Dark Age")
+    endChoice("EndingMJ12", "MJ12Enforce", Vector3.new(30, -8, -80), Color3.fromRGB(60, 30, 30), "Become MJ12 Enforcer")
 
     -- MJ12 commandos
     EnemyAI.run(EnemyAI.spawn(Vector3.new(-30, 4, 50), "AssaultRifle"))
@@ -128,6 +129,10 @@ function Area51.build(folder: Folder)
     MapUtil.pickup(folder, "WeaponModDamage", 2, Vector3.new(0, -8, -20), Color3.fromRGB(220, 60, 60))
     MapUtil.pickup(folder, "WeaponModAccuracy", 1, Vector3.new(20, -8, -20), Color3.fromRGB(80, 200, 80))
     MapUtil.pickup(folder, "WeaponModRange", 1, Vector3.new(-20, -8, -20), Color3.fromRGB(80, 160, 220))
+
+    -- MJ12 Quartermaster (sells exotic gear; only to MJ12 members).
+    MapUtil.vendor(folder, "MJ12 Quartermaster", Vector3.new(0, -8, -10), "MJ12_QM",
+        Color3.fromRGB(20, 20, 30))
 
     -- Transition back to UNATCO HQ
     MapUtil.transition(folder, "ToUNATCO", Vector3.new(0, 4, 115), Vector3.new(8, 8, 4), "UNATCO_HQ")

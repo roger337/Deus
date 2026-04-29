@@ -155,6 +155,12 @@ local Dialog: { [string]: DialogTree } = {
     JaimeReyes = {
         npc = "Dr. Jaime Reyes",
         start = "intro",
+        selectStart = {
+            { when = "aug:Cloak>=3",          node = "intro_cloak" },
+            { when = "aug:Regeneration",      node = "intro_regen" },
+            { when = "aug:CombatStrength>=2", node = "intro_strength" },
+            { when = "aug:BallisticProtection", node = "intro_armor" },
+        },
         nodes = {
             intro = {
                 speaker = "Dr. Reyes",
@@ -162,6 +168,38 @@ local Dialog: { [string]: DialogTree } = {
                 options = {
                     { text = "I'll take supplies.", next = "supplies", grants = { "Medkit", "Medkit", "Biocell" } },
                     { text = "Anything else for me?", next = "extras" },
+                    { text = "[Leave]", end_ = true },
+                },
+            },
+            intro_cloak = {
+                speaker = "Dr. Reyes",
+                text = "JC — your Cloak aug is at level three. The thermal bleed is undetectable. I had to triple-check the diagnostics; the system reads as if you weren't here at all.",
+                options = {
+                    { text = "Supplies?", next = "intro" },
+                    { text = "[Leave]", end_ = true },
+                },
+            },
+            intro_regen = {
+                speaker = "Dr. Reyes",
+                text = "Your Regeneration aug is firing right now. Are you bleeding internally? Sit down. ...No, of course you won't. Take extra biocells.",
+                options = {
+                    { text = "Supplies?", next = "supplies", grants = { "Medkit", "Biocell", "Biocell" } },
+                    { text = "[Leave]", end_ = true },
+                },
+            },
+            intro_strength = {
+                speaker = "Dr. Reyes",
+                text = "Combat Strength at level two. You're throwing punches that would shatter a normal man's hand. Try not to break too much UNATCO furniture.",
+                options = {
+                    { text = "Supplies?", next = "intro" },
+                    { text = "[Leave]", end_ = true },
+                },
+            },
+            intro_armor = {
+                speaker = "Dr. Reyes",
+                text = "Ballistic Protection mesh is online. I'd still suggest you don't make a habit of running into bullets, JC.",
+                options = {
+                    { text = "Noted. Supplies?", next = "intro" },
                     { text = "[Leave]", end_ = true },
                 },
             },
@@ -191,8 +229,10 @@ local Dialog: { [string]: DialogTree } = {
         npc = "Anna Navarre",
         start = "intro",
         selectStart = {
-            { when = "flag:killedAnna",  node = "post_killed" },
-            { when = "flag:sparedAnna",  node = "post_spared" },
+            { when = "flag:killedAnna",      node = "post_killed" },
+            { when = "flag:sparedAnna",      node = "post_spared" },
+            { when = "aug:CombatStrength>=2", node = "intro_strength" },
+            { when = "aug:Cloak",            node = "intro_cloak" },
         },
         nodes = {
             intro = {
@@ -245,6 +285,71 @@ local Dialog: { [string]: DialogTree } = {
                 text = "Denton. Whatever you said before, I haven't forgotten it. Don't make me regret walking away.",
                 options = { { text = "[End]", end_ = true } },
             },
+            intro_strength = {
+                speaker = "Anna Navarre",
+                text = "Compensating, Denton? Combat Strength at level two? I expected better from you. The right tool, not the loudest one.",
+                options = {
+                    { text = "It works.", next = "intro" },
+                    { text = "[Leave]", end_ = true },
+                },
+            },
+            intro_cloak = {
+                speaker = "Anna Navarre",
+                text = "Cloak. Cute. Don't think I can't see you, Denton. My Aggressive Defense doesn't care if you're invisible.",
+                options = {
+                    { text = "Noted.", next = "intro" },
+                    { text = "[Leave]", end_ = true },
+                },
+            },
+        },
+    },
+
+    -- =====================================================================
+    -- Walton Simons: MJ12 Director. The fourth-path antagonist who tries
+    -- to recruit JC for MJ12. Available in UNATCO HQ after meeting Paul.
+    -- =====================================================================
+    WaltonSimons = {
+        npc = "Walton Simons",
+        start = "intro",
+        selectStart = {
+            { when = "flag:joinedMJ12",   node = "post_join" },
+            { when = "flag:metWaltonSimons", node = "intro_again" },
+        },
+        nodes = {
+            intro = {
+                speaker = "Walton Simons",
+                text = "Agent Denton. Off the record. UNATCO is a... transitional structure. Above it sits MJ12 — and we are the long memory of this world. Your nano-augs are MJ12 prototypes. We made you.",
+                options = {
+                    { text = "What do you want?", next = "offer", effect = "flag:metWaltonSimons" },
+                    { text = "I serve UNATCO. We're done.", next = "refuse", effect = "flag:metWaltonSimons;rep:MJ12-10", end_ = true },
+                },
+            },
+            offer = {
+                speaker = "Walton Simons",
+                text = "Permanent appointment. Director-level access. You become the hand that enforces order from above. Bring this offer to your team — they vote, as you do for everything else now.",
+                options = {
+                    { text = "Call a team vote on joining MJ12.", effect = "vote:joinMJ12", end_ = true },
+                    { text = "Not yet.", next = "intro_again", end_ = true },
+                },
+            },
+            refuse = {
+                speaker = "Walton Simons",
+                text = "[He smiles thinly.] We'll see. The offer expires when you do.",
+                options = { { text = "[Leave]", end_ = true } },
+            },
+            intro_again = {
+                speaker = "Walton Simons",
+                text = "Reconsidered, Denton?",
+                options = {
+                    { text = "Open the team vote.", effect = "vote:joinMJ12", end_ = true },
+                    { text = "Not yet.", end_ = true },
+                },
+            },
+            post_join = {
+                speaker = "Walton Simons",
+                text = "Welcome aboard, Agent. The MJ12 Enforcer console waits for you in Sector 4 of Area 51. End the run on your terms.",
+                options = { { text = "[Leave]", end_ = true } },
+            },
         },
     },
 
@@ -255,8 +360,9 @@ local Dialog: { [string]: DialogTree } = {
         npc = "Tracer Tong",
         start = "intro",
         selectStart = {
-            { when = "flag:defected", node = "intro_defected" },
-            { when = "flag:metTracerTong", node = "intro_again" },
+            { when = "flag:defected",          node = "intro_defected" },
+            { when = "aug:Targeting>=2",       node = "intro_targeting" },
+            { when = "flag:metTracerTong",     node = "intro_again" },
         },
         nodes = {
             intro = {
@@ -294,6 +400,14 @@ local Dialog: { [string]: DialogTree } = {
                 speaker = "Tracer Tong",
                 text = "JC. Helios is at Area 51. Three terminals, three fates. The choice is yours — but choose carefully. Your hands are not as clean as you might believe.",
                 options = {
+                    { text = "[End]", end_ = true },
+                },
+            },
+            intro_targeting = {
+                speaker = "Tracer Tong",
+                text = "Your Targeting aug is scanning me. Stop that. I'm not a threat. ...And tell whoever wrote your aug firmware that the dwell-pattern is too obvious.",
+                options = {
+                    { text = "Apologies.", next = "intro" },
                     { text = "[End]", end_ = true },
                 },
             },

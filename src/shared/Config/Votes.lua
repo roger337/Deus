@@ -76,6 +76,27 @@ local Votes: { [string]: VoteDef } = {
             { id = "no",  label = "Cancel",               effect = "" },
         },
     },
+    endingMJ12Enforce = {
+        id = "endingMJ12Enforce",
+        prompt = "BECOME MJ12 ENFORCER — accept Walton Simons' offer. Available only after meeting Simons and accepting MJ12.",
+        timeoutSec = 25,
+        options = {
+            { id = "yes", label = "Become MJ12 Enforcer", effect = "ending:MJ12Enforce" },
+            { id = "no",  label = "Refuse",               effect = "" },
+        },
+    },
+
+    -- Walton Simons' offer to join MJ12 — opens before the player ever
+    -- reaches Area 51, so the MJ12 Enforcer ending is unlocked.
+    joinMJ12 = {
+        id = "joinMJ12",
+        prompt = "Walton Simons: \"Step into the role you were built for. Join MJ12. The world will reshape itself in your image.\"",
+        timeoutSec = 30,
+        options = {
+            { id = "yes", label = "Accept — join MJ12",  effect = "flag:joinedMJ12;faction:MJ12;rep:UNATCO-30;rep:MJ12+50" },
+            { id = "no",  label = "Refuse — UNATCO is enough", effect = "rep:UNATCO+10;rep:MJ12-25" },
+        },
+    },
 }
 
 return Votes

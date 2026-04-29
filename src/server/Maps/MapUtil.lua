@@ -127,6 +127,54 @@ function MapUtil.door(parent: Instance, pos: Vector3, locked: boolean, difficult
     return door
 end
 
+-- Vendor NPC: same shape as a regular NPC but tagged as a vendor with a
+-- VendorId attribute. Bright tag color so players can spot the merchant.
+function MapUtil.vendor(parent: Instance, name: string, pos: Vector3, vendorId: string, bodyColor: Color3?): Model
+    local model = Instance.new("Model")
+    model.Name = name
+    model:SetAttribute("InteractionType", "Vendor")
+    model:SetAttribute("VendorId", vendorId)
+
+    local hrp = Instance.new("Part")
+    hrp.Name = "HumanoidRootPart"
+    hrp.Anchored = true
+    hrp.Size = Vector3.new(2, 4, 1)
+    hrp.Position = pos
+    hrp.Color = bodyColor or Color3.fromRGB(80, 60, 40)
+    hrp.Material = Enum.Material.SmoothPlastic
+    hrp:SetAttribute("InteractionType", "Vendor")
+    hrp:SetAttribute("VendorId", vendorId)
+    hrp.Parent = model
+
+    local head = Instance.new("Part")
+    head.Name = "Head"
+    head.Anchored = true
+    head.Shape = Enum.PartType.Ball
+    head.Size = Vector3.new(1.4, 1.4, 1.4)
+    head.Position = pos + Vector3.new(0, 2.5, 0)
+    head.Color = Color3.fromRGB(220, 180, 140)
+    head.Parent = model
+
+    local bb = Instance.new("BillboardGui")
+    bb.Adornee = head
+    bb.Size = UDim2.new(0, 160, 0, 22)
+    bb.StudsOffset = Vector3.new(0, 1.6, 0)
+    bb.AlwaysOnTop = true
+    bb.Parent = head
+    local lbl = Instance.new("TextLabel")
+    lbl.BackgroundTransparency = 1
+    lbl.Size = UDim2.new(1, 0, 1, 0)
+    lbl.TextColor3 = Color3.fromRGB(255, 220, 120)
+    lbl.Font = Enum.Font.Code
+    lbl.TextScaled = true
+    lbl.Text = name .. "  [VENDOR]"
+    lbl.Parent = bb
+
+    model.PrimaryPart = hrp
+    model.Parent = parent
+    return model
+end
+
 function MapUtil.terminal(parent: Instance, pos: Vector3, difficulty: number, objectiveId: string?): Part
     local t = MapUtil.part(parent, {
         Name = "HackTerminal",

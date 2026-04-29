@@ -70,6 +70,11 @@ function UnatcoHQ.build(folder: Folder)
     MapUtil.npc(folder, "Paul Denton", Vector3.new(-20, 3, -15), "PaulDenton",
         Color3.fromRGB(40, 50, 90))
 
+    -- Walton Simons: MJ12 director. Lurks behind a glass wall on the
+    -- west side. Talking to him unlocks the MJ12 Enforcer path.
+    MapUtil.npc(folder, "Walton Simons", Vector3.new(-30, 3, 5), "WaltonSimons",
+        Color3.fromRGB(20, 20, 25))
+
     MapUtil.label(folder, "UNATCO Headquarters", Vector3.new(0, 14, 0),
         Color3.fromRGB(180, 220, 255))
 
@@ -97,6 +102,10 @@ function UnatcoHQ.build(folder: Folder)
     local EnemyAI = require(script.Parent.Parent.EnemyAI)
     local lobbyBot = EnemyAI.spawnSecurityBot(Vector3.new(0, 4, 20))
     lobbyBot:SetAttribute("Faction", "UNATCO")
+
+    -- UNATCO Quartermaster (faction-gated weapon vendor).
+    MapUtil.vendor(folder, "Quartermaster", Vector3.new(30, 3, 10), "UNATCO_QM",
+        Color3.fromRGB(40, 50, 90))
 end
 
 return UnatcoHQ
