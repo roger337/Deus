@@ -15,18 +15,23 @@ local InteractionController = {}
 local player = Players.LocalPlayer
 local camera = Workspace.CurrentCamera
 
-local PROMPT_RANGE = 12
+local PROMPT_RANGE = 14
 
 local current: Instance? = nil
 
+-- Cast from the character's head (not the camera) so third-person camera
+-- distance doesn't eat into the effective range. Direction is still the
+-- camera's look vector — which is where the player is aiming.
 local function findTarget(): Instance?
-    local origin = camera.CFrame.Position
+    local char = player.Character
+    if not char then return nil end
+    local head = char:FindFirstChild("Head") :: BasePart?
+    if not head then return nil end
+    local origin = head.Position
     local dir = camera.CFrame.LookVector
     local params = RaycastParams.new()
     params.FilterType = Enum.RaycastFilterType.Exclude
-    if player.Character then
-        params.FilterDescendantsInstances = { player.Character }
-    end
+    params.FilterDescendantsInstances = { char }
     local res = Workspace:Raycast(origin, dir * PROMPT_RANGE, params)
     if not res or not res.Instance then return nil end
     local inst: Instance = res.Instance

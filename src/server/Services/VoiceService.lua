@@ -15,7 +15,10 @@ local VoiceLines = require(Shared.Config.VoiceLines)
 local VoiceService = {}
 
 -- Throttle barks so an enemy doesn't spam the same line every tick.
-local lastBarkTime: { [string]: number } = {}
+-- Keyed by [Instance][voiceKey] so each source maintains its own cooldowns.
+-- Instances are valid table keys; entries leak when the source is destroyed
+-- but the leak is bounded by the number of NPCs ever spawned in a session.
+local lastBarkTime: { [Instance]: { [string]: number } } = {}
 local BARK_COOLDOWN = 4
 
 local function ev(): RemoteEvent
@@ -71,10 +74,14 @@ end
 -- Per-source throttled bark. Use this for enemy alerts so each grunt only
 -- yells one alert per cooldown window.
 function VoiceService.bark(source: Instance, voiceKey: string)
-    local key = source:GetDebugId() .. ":" .. voiceKey
     local now = os.clock()
-    if (lastBarkTime[key] or 0) + BARK_COOLDOWN > now then return end
-    lastBarkTime[key] = now
+    local sourceTimes = lastBarkTime[source]
+    if not sourceTimes then
+        sourceTimes = {}
+        lastBarkTime[source] = sourceTimes
+    end
+    if (sourceTimes[voiceKey] or 0) + BARK_COOLDOWN > now then return end
+    sourceTimes[voiceKey] = now
     VoiceService.playFromInstance(source, voiceKey)
 end
 
